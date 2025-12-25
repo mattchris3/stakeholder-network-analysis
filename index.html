@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Network Visualization</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>">
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>">
+    <link rel="icon" type="image/png" sizes="16x16" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>">
+    
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/controls.css">
+    <link rel="stylesheet" href="css/visualization.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <h1><i class="fas fa-network-wired"></i> Organization Network</h1>
+        <div class="navbar-menu">
+            <a href="#" class="active"><i class="fas fa-home"></i> Home</a>
+            <a href="#"><i class="fas fa-poll"></i> Surveys</a>
+            <a href="#"><i class="fas fa-list"></i> Lists</a>
+            <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Statistics Cards -->
+            <div class="stats-container">
+                <div class="stat-card blue">
+                    <i class="fas fa-building"></i>
+                    <div class="stat-value" id="entityCount">0</div>
+                    <div class="stat-label">Organizations</div>
+                </div>
+                <div class="stat-card green">
+                    <i class="fas fa-link"></i>
+                    <div class="stat-value" id="connectionCount">0</div>
+                    <div class="stat-label">Connections</div>
+                </div>
+                <div class="stat-card orange">
+                    <i class="fas fa-calendar"></i>
+                    <div class="stat-value" id="meetingCount">0</div>
+                    <div class="stat-label">Total Meetings</div>
+                </div>
+                <div class="stat-card purple">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="stat-value" id="avgConnections">0</div>
+                    <div class="stat-label">Avg. Connections</div>
+                </div>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="controls">
+                <div class="controls-header">
+                    <h3><i class="fas fa-sliders-h"></i> Controls & Filters</h3>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search organizations...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="controls-row">
+                    <div class="control-group">
+                        <label>View Mode</label>
+                        <select id="viewMode">
+                            <option value="all">All Entities</option>
+                            <option value="active">Active Only (5+ meetings)</option>
+                            <option value="top">Top 10 Collaborators</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Filter by Sector</label>
+                        <select id="filterSector">
+                            <option value="all">All Sectors</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="education">Education</option>
+                            <option value="government">Government</option>
+                            <option value="nonprofit">Non-Profit</option>
+                            <option value="business">Business</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Connection Strength</label>
+                        <select id="connectionStrength">
+                            <option value="all">All Connections</option>
+                            <option value="strong">Strong (3+ meetings)</option>
+                            <option value="medium">Medium (2 meetings)</option>
+                            <option value="weak">Weak (1 meeting)</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button class="secondary" onclick="loadVisualization()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button onclick="resetZoom()">
+                            <i class="fas fa-search-location"></i> Reset Zoom
+                        </button>
+                        <button onclick="toggleExportMenu()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button class="danger" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Export Menu -->
+                <div class="export-menu" id="exportMenu">
+                    <div class="export-option" onclick="exportPNG()">
+                        <i class="fas fa-image"></i> Export as PNG
+                    </div>
+                    <div class="export-option" onclick="exportJSON()">
+                        <i class="fas fa-file-code"></i> Export as JSON
+                    </div>
+                    <div class="export-option" onclick="exportCSV()">
+                        <i class="fas fa-file-csv"></i> Export as CSV
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Visualization -->
+            <div id="network">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading network data...</p>
+                </div>
+            </div>
+            
+            <!-- Tooltip -->
+            <div class="tooltip" id="tooltip"></div>
+        </div>
+        
+        <!-- Right Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-tabs">
+                <button class="tab-btn active" onclick="switchTab('overview')">
+                    <i class="fas fa-chart-pie"></i> Overview
+                </button>
+                <button class="tab-btn" onclick="switchTab('details')">
+                    <i class="fas fa-info-circle"></i> Details
+                </button>
+            </div>
+            
+            <div id="overview-tab" class="tab-content active">
+                <h3>Top Active Organizations</h3>
+                <ul class="entity-list" id="topEntities">
+                </ul>
+            </div>
+            
+            <div id="details-tab" class="tab-content">
+                <h3>Entity Details</h3>
+                <p style="color: #999; text-align: center; padding: 20px;">
+                    <i class="fas fa-mouse-pointer"></i><br>
+                    Click on an entity to see details
+                </p>
+                <div id="entityDetails" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
