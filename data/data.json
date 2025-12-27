@@ -1,0 +1,156 @@
+{
+  "entities": [
+    {
+      "id": 1,
+      "name": "WHO",
+      "fullName": "World Health Organization",
+      "sector": "healthcare"
+    },
+    {
+      "id": 2,
+      "name": "UNICEF",
+      "fullName": "United Nations Children's Fund",
+      "sector": "nonprofit"
+    },
+    {
+      "id": 3,
+      "name": "Red Cross",
+      "fullName": "International Committee of the Red Cross",
+      "sector": "nonprofit"
+    },
+    {
+      "id": 4,
+      "name": "MSF",
+      "fullName": "Médecins Sans Frontières",
+      "sector": "healthcare"
+    },
+    {
+      "id": 5,
+      "name": "CDC",
+      "fullName": "Centers for Disease Control and Prevention",
+      "sector": "government"
+    },
+    {
+      "id": 6,
+      "name": "GAVI",
+      "fullName": "Global Alliance for Vaccines and Immunization",
+      "sector": "healthcare"
+    },
+    {
+      "id": 7,
+      "name": "World Bank",
+      "fullName": "World Bank Group",
+      "sector": "business"
+    },
+    {
+      "id": 8,
+      "name": "Gates Foundation",
+      "fullName": "Bill & Melinda Gates Foundation",
+      "sector": "nonprofit"
+    },
+    {
+      "id": 9,
+      "name": "Harvard",
+      "fullName": "Harvard University",
+      "sector": "education"
+    },
+    {
+      "id": 10,
+      "name": "Oxford",
+      "fullName": "University of Oxford",
+      "sector": "education"
+    }
+  ],
+  "meetings": [
+    {
+      "id": 1,
+      "title": "Global Health Summit",
+      "date": "2024-01-15",
+      "participants": [1, 2, 6]
+    },
+    {
+      "id": 2,
+      "title": "Disease Prevention Workshop",
+      "date": "2024-02-20",
+      "participants": [1, 4, 5]
+    },
+    {
+      "id": 3,
+      "title": "Humanitarian Aid Coordination",
+      "date": "2024-03-10",
+      "participants": [2, 3, 8]
+    },
+    {
+      "id": 4,
+      "title": "Emergency Response Planning",
+      "date": "2024-04-05",
+      "participants": [3, 4]
+    },
+    {
+      "id": 5,
+      "title": "Vaccine Distribution Strategy",
+      "date": "2024-05-12",
+      "participants": [1, 2, 5, 6]
+    },
+    {
+      "id": 6,
+      "title": "Public Health Policy Review",
+      "date": "2024-06-18",
+      "participants": [1, 5, 9]
+    },
+    {
+      "id": 7,
+      "title": "Crisis Management Training",
+      "date": "2024-07-22",
+      "participants": [2, 3, 4]
+    },
+    {
+      "id": 8,
+      "title": "Health Data Sharing Agreement",
+      "date": "2024-08-30",
+      "participants": [1, 4, 9, 10]
+    },
+    {
+      "id": 9,
+      "title": "Disaster Relief Coordination",
+      "date": "2024-09-14",
+      "participants": [3, 2, 8]
+    },
+    {
+      "id": 10,
+      "title": "Annual Health Conference",
+      "date": "2024-10-25",
+      "participants": [1, 2, 4, 5, 6]
+    },
+    {
+      "id": 11,
+      "title": "Education in Health Workshop",
+      "date": "2024-11-05",
+      "participants": [9, 10, 1]
+    },
+    {
+      "id": 12,
+      "title": "Funding Opportunities Discussion",
+      "date": "2024-11-20",
+      "participants": [7, 8, 6]
+    },
+    {
+      "id": 13,
+      "title": "Research Collaboration Meeting",
+      "date": "2024-12-01",
+      "participants": [9, 10, 4]
+    },
+    {
+      "id": 14,
+      "title": "Global Health Financing",
+      "date": "2024-12-10",
+      "participants": [7, 1, 8]
+    },
+    {
+      "id": 15,
+      "title": "Emergency Preparedness Training",
+      "date": "2024-12-15",
+      "participants": [5, 3, 2]
+    }
+  ]
+}
