@@ -175,3 +175,102 @@
     outline: none;
     border-color: #3498db;
 }
+
+.chart-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin: 0 auto;
+    max-height: 500px;
+}
+
+.chart-section h3 {
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.chart-container {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    height: 100%;
+}
+
+.chart-container canvas {
+    max-width: 500px;
+    max-height: 400px;
+    flex: 2;
+}
+
+.sector-list {
+    flex: 1;
+    min-width: 200px;
+}
+
+.sector-item {
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sector-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.sector-count {
+    background: #3498db;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.meeting-detail {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.meeting-detail ul {
+    list-style: none;
+    padding: 0;
+}
+
+.meeting-detail li {
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.meeting-detail li strong {
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.data-table tr {
+    transition: all 0.3s;
+}
+
+.data-table tbody tr {
+    background: white;
+}
+
+.data-table tbody tr:hover {
+    background: #e3f2fd;
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.data-table tbody tr[style*="cursor: pointer"]:hover {
+    cursor: pointer;
+}

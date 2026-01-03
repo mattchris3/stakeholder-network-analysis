@@ -1,4 +1,4 @@
-import { database } from './config.js';
+import { database } from '../config.js';
 import { ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 import { createD3Visualization } from './visualization.js';
 import { updateStatistics, updateSidebarTopEntities } from './visualization.js';

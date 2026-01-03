@@ -1,8 +1,10 @@
-import { database } from './config.js';
+import { database } from '../config.js';
 import { ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { displayOverview } from './overview.js';
+import { setupViewButtons } from './view-switcher.js';
 
-let allEntities = [];
-let allMeetings = [];
+export let allEntities = [];
+export let allMeetings = [];
 
 if (!sessionStorage.getItem('adminAuthenticated')) {
     window.location.href = 'login.html';
@@ -11,6 +13,7 @@ if (!sessionStorage.getItem('adminAuthenticated')) {
 document.addEventListener('DOMContentLoaded', () => {
     loadData();
     setupNavigation();
+    setupViewButtons();
 });
 
 function setupNavigation() {
@@ -65,53 +68,4 @@ async function loadData() {
         console.error('Error loading data:', error);
         alert('Error loading data from Firebase');
     }
-}
-
-function displayOverview() {
-    document.getElementById('totalEntities').textContent = allEntities.length;
-    document.getElementById('totalMeetings').textContent = allMeetings.length;
-    
-    const totalParticipants = allMeetings.reduce((sum, meeting) => {
-        return sum + (meeting.participants ? meeting.participants.length : 0);
-    }, 0);
-    const avgParticipants = allMeetings.length > 0 
-        ? (totalParticipants / allMeetings.length).toFixed(1) 
-        : 0;
-    document.getElementById('avgParticipants').textContent = avgParticipants;
-
-    displayEntitiesTable();
-    displayMeetingsTable();
-}
-
-function displayEntitiesTable() {
-    const tbody = document.getElementById('entitiesTable');
-    tbody.innerHTML = '';
-
-    allEntities.forEach(entity => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${entity.id}</td>
-            <td>${entity.name}</td>
-            <td>${entity.fullName}</td>
-            <td>${entity.sector}</td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-function displayMeetingsTable() {
-    const tbody = document.getElementById('meetingsTable');
-    tbody.innerHTML = '';
-
-    allMeetings.forEach(meeting => {
-        const participantCount = meeting.participants ? meeting.participants.length : 0;
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${meeting.id}</td>
-            <td>${meeting.title}</td>
-            <td>${meeting.date}</td>
-            <td>${participantCount} participants</td>
-        `;
-        tbody.appendChild(row);
-    });
 }

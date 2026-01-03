@@ -66,90 +66,120 @@
       "id": 1,
       "title": "Global Health Summit",
       "date": "2024-01-15",
+      "purpose": "Establish global health priorities and vaccination strategies for developing nations",
+      "outcome": "Agreed on accelerated vaccine distribution framework for 50 countries by Q2 2024",
       "participants": [1, 2, 6]
     },
     {
       "id": 2,
       "title": "Disease Prevention Workshop",
       "date": "2024-02-20",
+      "purpose": "Share best practices for infectious disease prevention and outbreak response protocols",
+      "outcome": "Developed unified early warning system for disease outbreaks across three continents",
       "participants": [1, 4, 5]
     },
     {
       "id": 3,
       "title": "Humanitarian Aid Coordination",
       "date": "2024-03-10",
+      "purpose": "Coordinate relief efforts for regions affected by natural disasters and conflicts",
+      "outcome": "Established joint rapid response team with $50M emergency fund allocation",
       "participants": [2, 3, 8]
     },
     {
       "id": 4,
       "title": "Emergency Response Planning",
       "date": "2024-04-05",
+      "purpose": "Plan emergency medical response procedures for crisis situations in conflict zones",
+      "outcome": "Created standardized emergency protocol for field hospitals in high-risk areas",
       "participants": [3, 4]
     },
     {
       "id": 5,
       "title": "Vaccine Distribution Strategy",
       "date": "2024-05-12",
+      "purpose": "Design efficient vaccine supply chain and cold storage solutions for remote areas",
+      "outcome": "Approved $120M investment in cold chain infrastructure across 35 countries",
       "participants": [1, 2, 5, 6]
     },
     {
       "id": 6,
       "title": "Public Health Policy Review",
       "date": "2024-06-18",
+      "purpose": "Review and update public health policies based on recent pandemic learnings",
+      "outcome": "Recommended 12 policy changes to improve pandemic preparedness and response",
       "participants": [1, 5, 9]
     },
     {
       "id": 7,
       "title": "Crisis Management Training",
       "date": "2024-07-22",
+      "purpose": "Train field staff on crisis management and emergency response in humanitarian contexts",
+      "outcome": "Certified 250 personnel in advanced crisis management protocols",
       "participants": [2, 3, 4]
     },
     {
       "id": 8,
       "title": "Health Data Sharing Agreement",
       "date": "2024-08-30",
+      "purpose": "Establish secure framework for sharing health data across international organizations",
+      "outcome": "Signed data sharing agreement enabling real-time health surveillance across 40 nations",
       "participants": [1, 4, 9, 10]
     },
     {
       "id": 9,
       "title": "Disaster Relief Coordination",
       "date": "2024-09-14",
+      "purpose": "Coordinate disaster relief operations and resource allocation for recent flooding events",
+      "outcome": "Deployed relief to 15 affected regions with coordinated logistics saving 30% costs",
       "participants": [3, 2, 8]
     },
     {
       "id": 10,
       "title": "Annual Health Conference",
       "date": "2024-10-25",
+      "purpose": "Review annual health metrics and set strategic goals for the upcoming year",
+      "outcome": "Set ambitious targets to reduce child mortality by 15% and increase vaccination rates by 20%",
       "participants": [1, 2, 4, 5, 6]
     },
     {
       "id": 11,
       "title": "Education in Health Workshop",
       "date": "2024-11-05",
+      "purpose": "Develop educational programs to improve health literacy in underserved communities",
+      "outcome": "Launched 10 pilot health education programs in partnership with local schools",
       "participants": [9, 10, 1]
     },
     {
       "id": 12,
       "title": "Funding Opportunities Discussion",
       "date": "2024-11-20",
+      "purpose": "Explore funding opportunities and investment strategies for health initiatives",
+      "outcome": "Secured $200M in funding commitments for vaccine research and distribution programs",
       "participants": [7, 8, 6]
     },
     {
       "id": 13,
       "title": "Research Collaboration Meeting",
       "date": "2024-12-01",
+      "purpose": "Establish research partnerships for developing new treatment protocols and medications",
+      "outcome": "Initiated 5 joint research projects on infectious disease treatment innovations",
       "participants": [9, 10, 4]
     },
     {
       "id": 14,
       "title": "Global Health Financing",
       "date": "2024-12-10",
+      "purpose": "Discuss sustainable financing models for long-term global health programs",
+      "outcome": "Approved innovative financing mechanism generating $500M over 5 years",
       "participants": [7, 1, 8]
     },
     {
       "id": 15,
       "title": "Emergency Preparedness Training",
       "date": "2024-12-15",
+      "purpose": "Conduct emergency preparedness drills and update response protocols for health workers",
+      "outcome": "Trained 500 healthcare workers and updated emergency response guidelines",
       "participants": [5, 3, 2]
     }
   ]

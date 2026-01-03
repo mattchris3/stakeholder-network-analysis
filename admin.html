@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/admin/main.css">
     <link rel="stylesheet" href="css/admin/components.css">
     <link rel="stylesheet" href="css/admin/table.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="admin-container">
@@ -71,41 +72,54 @@
                     </button>
                 </div>
 
-                <div class="data-section">
-                    <h3>Entities</h3>
+                <div class="chart-section">
+                    <h3>Organizations by Sector</h3>
+                    <div class="chart-container">
+                        <canvas id="sectorChart"></canvas>
+                        <div class="sector-list" id="sectorList"></div>
+                    </div>
+                </div>
+                <div class="organizations-section" style="display: none;">
+                    <h3>Organizations</h3>
                     <div class="table-container">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Name</th>
-                                    <th>Full Name</th>
                                     <th>Sector</th>
+                                    <th>Meetings</th>
                                 </tr>
                             </thead>
-                            <tbody id="entitiesTable">
-                            </tbody>
+                            <tbody id="organizationsTable"></tbody>
                         </table>
                     </div>
-                </div>
+                </div> 
 
-                <div class="data-section">
+                <div class="meetings-section" style="display: none;">
                     <h3>Meetings</h3>
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Title</th>
-                                    <th>Date</th>
-                                    <th>Participants</th>
-                                </tr>
-                            </thead>
-                            <tbody id="meetingsTable">
-                            </tbody>
-                        </table>
+                    
+                    <div id="meetingsTableContainer">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Organizations</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="meetingsTableView"></tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                    
+                    <div class="meeting-detail" id="meetingDetail" style="display: none;">
+                        <button class="btn btn-primary" onclick="backToMeetingsTable()">
+                            <i class="fas fa-arrow-left"></i> Back to Meetings
+                        </button>
+                        <div id="meetingDetailContent"></div>
+                    </div>
+                </div>                             
             </div>
 
             <div class="tab-content" id="modify-content">
@@ -179,6 +193,6 @@
         </main>
     </div>
 
-    <script type="module" src="js/admin.js"></script>
+    <script type="module" src="js/admin/main.js"></script>
 </body>
 </html>
