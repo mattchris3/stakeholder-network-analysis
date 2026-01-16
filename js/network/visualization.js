@@ -18,15 +18,9 @@ export function createD3Visualization(nodes, links) {
     g = svg.append('g');
     
     zoom = d3.zoom()
-        .scaleExtent([0.8, 2])
+        .scaleExtent([0.8, 2.8])
         .on('zoom', (event) => {
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const transform = d3.zoomIdentity
-                .translate(centerX, centerY)
-                .scale(event.transform.k)
-                .translate(-centerX, -centerY);
-            g.attr('transform', transform);
+            g.attr('transform', event.transform);
         })
         .filter(event => {
             return event.type === 'wheel' || event.type === 'dblclick';

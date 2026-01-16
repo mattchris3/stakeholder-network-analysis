@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/admin/main.css">
     <link rel="stylesheet" href="css/admin/components.css">
     <link rel="stylesheet" href="css/admin/table.css">
+    <link rel="stylesheet" href="css/admin/modify-section.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -79,21 +80,32 @@
                         <div class="sector-list" id="sectorList"></div>
                     </div>
                 </div>
+
                 <div class="organizations-section" style="display: none;">
                     <h3>Organizations</h3>
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Sector</th>
-                                    <th>Meetings</th>
-                                </tr>
-                            </thead>
-                            <tbody id="organizationsTable"></tbody>
-                        </table>
+                    
+                    <div id="organizationsTableContainer">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Sector</th>
+                                        <th>Meetings</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="organizationsTable"></tbody>
+                            </table>
+                        </div>
                     </div>
-                </div> 
+                    
+                    <div class="organization-detail" id="organizationDetail" style="display: none;">
+                        <button class="btn btn-primary" onclick="backToOrganizationsTable()">
+                            <i class="fas fa-arrow-left"></i> Back to Organizations
+                        </button>
+                        <div id="organizationDetailContent"></div>
+                    </div>
+                </div>
 
                 <div class="meetings-section" style="display: none;">
                     <h3>Meetings</h3>
@@ -123,47 +135,202 @@
             </div>
 
             <div class="tab-content" id="modify-content">
-                <div class="modify-section">
-                    <h3>Manage Entities</h3>
-                    <button class="btn btn-primary" onclick="showAddEntityModal()">
-                        <i class="fas fa-plus"></i> Add Entity
-                    </button>
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Full Name</th>
-                                    <th>Sector</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="modifyEntitiesTable">
-                            </tbody>
-                        </table>
+                <div id="modifyTablesView">
+                    <div class="modify-section">
+                        <h3>Manage Organizations</h3>
+                        <button class="btn btn-primary" onclick="showAddEntityForm()">
+                            <i class="fas fa-plus"></i> Add Organization
+                        </button>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Full Name</th>
+                                        <th>Sector</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modifyEntitiesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="modify-section">
+                        <h3>Manage Meetings</h3>
+                        <button class="btn btn-primary" onclick="showAddMeetingForm()">
+                            <i class="fas fa-plus"></i> Add Meeting
+                        </button>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Participants</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modifyMeetingsTable"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <div class="modify-section">
-                    <h3>Manage Meetings</h3>
-                    <button class="btn btn-primary" onclick="showAddMeetingModal()">
-                        <i class="fas fa-plus"></i> Add Meeting
+                <div id="addEntityFormView" style="display: none;">
+                    <button class="btn btn-primary" onclick="backToModifyTables()">
+                        <i class="fas fa-arrow-left"></i> Back to Tables
                     </button>
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Title</th>
-                                    <th>Date</th>
-                                    <th>Participants</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="modifyMeetingsTable">
-                            </tbody>
-                        </table>
+                    <div class="form-container">
+                        <h3>Add New Organization</h3>
+                        <form id="addEntityForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Short Name *</label>
+                                    <input type="text" id="entityName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Full Name *</label>
+                                    <input type="text" id="entityFullName" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Sector *</label>
+                                    <select id="entitySector" required>
+                                        <option value="">Select sector...</option>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="education">Education</option>
+                                        <option value="government">Government</option>
+                                        <option value="nonprofit">Non-Profit</option>
+                                        <option value="business">Business</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status *</label>
+                                    <select id="entityStatus" required>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="entityDescription" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Primary Duty</label>
+                                <textarea id="entityDuty" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Funding Source</label>
+                                <textarea id="entityFunding" rows="2"></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Annual Budget ($)</label>
+                                    <input type="number" id="entityBudget">
+                                </div>
+                                <div class="form-group">
+                                    <label>Founded (Year)</label>
+                                    <input type="number" id="entityFounded" min="1800" max="2100">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" id="entityLocation">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Add Organization
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="editEntityFormView" style="display: none;">
+                    <button class="btn btn-primary" onclick="backToModifyTables()">
+                        <i class="fas fa-arrow-left"></i> Back to Tables
+                    </button>
+                    <div class="form-container">
+                        <h3>Edit Organization</h3>
+                        <form id="editEntityForm">
+                            <input type="hidden" id="editEntityId">
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Short Name *</label>
+                                    <input type="text" id="editEntityName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Full Name *</label>
+                                    <input type="text" id="editEntityFullName" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Sector *</label>
+                                    <select id="editEntitySector" required>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="education">Education</option>
+                                        <option value="government">Government</option>
+                                        <option value="nonprofit">Non-Profit</option>
+                                        <option value="business">Business</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status *</label>
+                                    <select id="editEntityStatus" required>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="editEntityDescription" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Primary Duty</label>
+                                <textarea id="editEntityDuty" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Funding Source</label>
+                                <textarea id="editEntityFunding" rows="2"></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Annual Budget ($)</label>
+                                    <input type="number" id="editEntityBudget">
+                                </div>
+                                <div class="form-group">
+                                    <label>Founded (Year)</label>
+                                    <input type="number" id="editEntityFounded" min="1800" max="2100">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" id="editEntityLocation">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Organization
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

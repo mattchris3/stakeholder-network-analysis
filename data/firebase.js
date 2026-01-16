@@ -14,11 +14,16 @@ const data = JSON.parse(fs.readFileSync('./data.json', 'utf8'));
 async function uploadData() {
     try {
         console.log('Uploading entities...');
-        await set(ref(database, 'entities'), data.entities);
+        
+        for (const entity of data.entities) {
+            await set(ref(database, `entities/${entity.id}`), entity);
+        }
         console.log('Entities uploaded successfully');
 
         console.log('Uploading meetings...');
-        await set(ref(database, 'meetings'), data.meetings);
+        for (const meeting of data.meetings) {
+            await set(ref(database, `meetings/${meeting.id}`), meeting);
+        }
         console.log('Meetings uploaded successfully');
 
         console.log('All data uploaded to Firebase');

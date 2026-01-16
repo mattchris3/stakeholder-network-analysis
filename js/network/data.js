@@ -12,6 +12,7 @@ export async function loadVisualization() {
     try {
         document.querySelector('.loading').style.display = 'block';
         
+        
         const entitiesRef = ref(database, 'entities');
         const entitiesData = await get(entitiesRef);
         
@@ -23,7 +24,10 @@ export async function loadVisualization() {
             return;
         }
 
-        const entities = entitiesData.val();
+        const data = entitiesData.val();
+        const entities = Object.fromEntries(
+            Object.entries(data).filter(([key, value]) => value !== null && value !== undefined)
+        );        
         
         let meetings;
         if (meetingsData.exists()) {
@@ -46,6 +50,8 @@ export async function loadVisualization() {
 function processNetworkData(entities, meetings) {
     const entitiesArray = Array.isArray(entities) ? entities : Object.values(entities);
     const meetingsArray = Array.isArray(meetings) ? meetings : Object.values(meetings);
+
+    const validEntityIds = new Set(entitiesArray.map(e => e.id));
 
     const meetingCounts = {};
     const connectionMap = {};
@@ -83,7 +89,9 @@ function processNetworkData(entities, meetings) {
         sector: entity.sector || 'unknown'
     }));
 
-    allLinks = Object.values(connectionMap);
+    allLinks = Object.values(connectionMap).filter(link => 
+        validEntityIds.has(link.source) && validEntityIds.has(link.target)
+    );
 
     updateStatistics();
     updateSidebarTopEntities();

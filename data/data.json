@@ -4,61 +4,131 @@
       "id": 1,
       "name": "WHO",
       "fullName": "World Health Organization",
-      "sector": "healthcare"
+      "sector": "healthcare",
+      "description": "International public health organization coordinating health initiatives and emergency responses worldwide",
+      "duty": "Set global health standards, coordinate pandemic responses, and provide technical support to countries",
+      "fundingSource": "Member state contributions (20%), voluntary donations from governments and foundations (80%)",
+      "budget": 2400000000,
+      "founded": 1948,
+      "location": "Geneva, Switzerland",
+      "status": "active"
     },
     {
       "id": 2,
       "name": "UNICEF",
       "fullName": "United Nations Children's Fund",
-      "sector": "nonprofit"
+      "sector": "nonprofit",
+      "description": "Global humanitarian organization focused on children's rights, survival, development and protection",
+      "duty": "Provide emergency relief, education, healthcare and nutrition programs for children in crisis zones",
+      "fundingSource": "Voluntary contributions from governments (70%), private sector partnerships (20%), individual donations (10%)",
+      "budget": 7200000000,
+      "founded": 1946,
+      "location": "New York City, United States",
+      "status": "active"
     },
     {
       "id": 3,
       "name": "Red Cross",
       "fullName": "International Committee of the Red Cross",
-      "sector": "nonprofit"
+      "sector": "nonprofit",
+      "description": "Humanitarian organization providing emergency assistance, disaster relief and education in communities worldwide",
+      "duty": "Protect victims of armed conflict, provide disaster response, and promote humanitarian law compliance",
+      "fundingSource": "Government donations (65%), public fundraising (25%), corporate partnerships (10%)",
+      "budget": 2100000000,
+      "founded": 1863,
+      "location": "Geneva, Switzerland",
+      "status": "active"
     },
     {
       "id": 4,
       "name": "MSF",
       "fullName": "Médecins Sans Frontières",
-      "sector": "healthcare"
+      "sector": "healthcare",
+      "description": "International medical humanitarian organization delivering emergency aid to people affected by conflict, epidemics, and disasters",
+      "duty": "Provide emergency medical care in conflict zones, treat epidemic diseases, and operate mobile clinics",
+      "fundingSource": "Private individual donations (96%), institutional funding (4%)",
+      "budget": 1900000000,
+      "founded": 1971,
+      "location": "Geneva, Switzerland",
+      "status": "active"
     },
     {
       "id": 5,
       "name": "CDC",
       "fullName": "Centers for Disease Control and Prevention",
-      "sector": "government"
+      "sector": "government",
+      "description": "National public health institute leading science-based disease prevention and health promotion initiatives",
+      "duty": "Monitor and investigate disease outbreaks, develop prevention strategies, and provide health guidelines",
+      "fundingSource": "Federal government appropriations (85%), user fees and reimbursements (15%)",
+      "budget": 15400000000,
+      "founded": 1946,
+      "location": "Atlanta, Georgia, United States",
+      "status": "active"
     },
     {
       "id": 6,
       "name": "GAVI",
       "fullName": "Global Alliance for Vaccines and Immunization",
-      "sector": "healthcare"
+      "sector": "healthcare",
+      "description": "Public-private partnership increasing access to immunization in poor countries through vaccine procurement and health system strengthening",
+      "duty": "Accelerate vaccine access, strengthen immunization systems, and negotiate affordable vaccine prices",
+      "fundingSource": "Donor governments (60%), Bill & Melinda Gates Foundation (20%), private sector (10%), innovative financing (10%)",
+      "budget": 1600000000,
+      "founded": 2000,
+      "location": "Geneva, Switzerland",
+      "status": "active"
     },
     {
       "id": 7,
       "name": "World Bank",
       "fullName": "World Bank Group",
-      "sector": "business"
+      "sector": "business",
+      "description": "International financial institution providing loans and grants to governments for capital projects and economic development",
+      "duty": "Finance infrastructure projects, reduce poverty through economic development, and provide technical expertise",
+      "fundingSource": "Bond issuances in capital markets (70%), member country subscriptions (20%), loan repayments (10%)",
+      "budget": 43000000000,
+      "founded": 1944,
+      "location": "Washington, D.C., United States",
+      "status": "active"
     },
     {
       "id": 8,
       "name": "Gates Foundation",
       "fullName": "Bill & Melinda Gates Foundation",
-      "sector": "nonprofit"
+      "sector": "nonprofit",
+      "description": "Private philanthropic organization focused on global health, poverty alleviation, and expanding educational opportunities",
+      "duty": "Fund health innovation, support vaccine development, improve agricultural productivity in developing countries",
+      "fundingSource": "Endowment from Bill and Melinda Gates (95%), Warren Buffett contributions (5%)",
+      "budget": 6700000000,
+      "founded": 2000,
+      "location": "Seattle, Washington, United States",
+      "status": "active"
     },
     {
       "id": 9,
       "name": "Harvard",
       "fullName": "Harvard University",
-      "sector": "education"
+      "sector": "education",
+      "description": "Private Ivy League research university conducting advanced medical and public health research",
+      "duty": "Conduct health policy research, train global health professionals, and develop innovative treatment protocols",
+      "fundingSource": "Endowment returns (35%), research grants (30%), tuition and fees (20%), donations (15%)",
+      "budget": 5400000000,
+      "founded": 1636,
+      "location": "Cambridge, Massachusetts, United States",
+      "status": "active"
     },
     {
       "id": 10,
       "name": "Oxford",
       "fullName": "University of Oxford",
-      "sector": "education"
+      "sector": "education",
+      "description": "Collegiate research university leading vaccine development and global health research initiatives",
+      "duty": "Develop vaccines and treatments, conduct epidemiological research, and train healthcare leaders",
+      "fundingSource": "Research grants (40%), endowment and investments (25%), tuition fees (20%), government funding (15%)",
+      "budget": 2800000000,
+      "founded": 1096,
+      "location": "Oxford, United Kingdom",
+      "status": "active"
     }
   ],
   "meetings": [

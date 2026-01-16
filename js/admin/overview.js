@@ -11,6 +11,11 @@ function displaySectorChart() {
         return;
     }
 
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) {
+        existingChart.destroy();
+    }
+
     const sectorCounts = {};
     
     allEntities.forEach(entity => {

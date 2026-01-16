@@ -274,3 +274,28 @@
 .data-table tbody tr[style*="cursor: pointer"]:hover {
     cursor: pointer;
 }
+
+.organization-detail {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.organization-detail ul {
+    list-style: none;
+    padding: 0;
+}
+
+.organization-detail li {
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.organization-detail li strong {
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}

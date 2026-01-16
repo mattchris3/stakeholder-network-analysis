@@ -2,6 +2,7 @@ import { database } from '../config.js';
 import { ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 import { displayOverview } from './overview.js';
 import { setupViewButtons } from './view-switcher.js';
+import { displayModifyTables } from './modify.js';
 
 export let allEntities = [];
 export let allMeetings = [];
@@ -43,7 +44,16 @@ function switchTab(tabName) {
         modify: 'Modify Data',
         settings: 'Admin Settings'
     };
+
     document.getElementById('pageTitle').textContent = titles[tabName];
+
+    if (tabName === 'overview') {
+        loadData();
+    } else if (tabName === 'modify') {
+        loadData().then(() => {
+            displayModifyTables();
+        });
+    }
 }
 
 async function loadData() {
