@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Access - Organization Network</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%232c5aa0'/></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/welcome-admin.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="card-header">
+                <i class="fas fa-user-shield"></i>
+                <h1>Admin Access</h1>
+                <p>Manage your unity dashboard</p>
+            </div>
+
+            <form id="adminLoginForm" class="login-form">
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-network-wired"></i>
+                        Unity ID
+                    </label>
+                    <input type="text" id="unityId" placeholder="e.g., UNITY-GLOBHEALTH-2026" required>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-user"></i>
+                        Username
+                    </label>
+                    <input type="text" id="username" placeholder="Enter your admin username" required>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-lock"></i>
+                        Password
+                    </label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="error-message" id="errorMessage"></div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Access Dashboard</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="card-footer">
+                <a href="welcome.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to home
+                </a>
+                <a href="welcome-create.html" class="alt-link">
+                    Create new unity
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./js/login.js"></script>
+</body>
+</html>

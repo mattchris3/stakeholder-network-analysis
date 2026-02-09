@@ -1,0 +1,66 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Login - Organization Network</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/welcome-existing-login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="card-header">
+                <i class="fas fa-user-check"></i>
+                <h1>Member Login</h1>
+                <p>Enter your credentials to access the network</p>
+            </div>
+
+            <form id="memberLoginForm" class="login-form">
+                <div class="form-group">
+                    <label for="unityId">
+                        <i class="fas fa-network-wired"></i>
+                        Unity ID
+                    </label>
+                    <input 
+                        type="text" 
+                        id="unityId" 
+                        placeholder="e.g., UNITY-HEALTH-2025" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i>
+                        Username
+                    </label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        placeholder="Your organization username" 
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Access Network</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="card-footer">
+                <a href="welcome-existing.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back
+                </a>
+                <a href="welcome-existing-new.html" class="alt-link">
+                    New member? Register here
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/existing-member-login.js"></script>
+</body>
+</html>
