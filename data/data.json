@@ -1,256 +1,309 @@
 {
-  "entities": [
-    {
-      "id": 1,
+  "unities": {
+    "UNITY-GLOBHEALTH-2025": {
+      "unityId": "UNITY-GLOBHEALTH-2025",
+      "name": "Global Health Unity",
+      "description": "International collaborative network for global health initiatives",
+      "accessCode": "GHU2534",
+      "created": "2025-01-16"
+    }
+  },
+  "admins": {
+    "ADMIN-GLOBHEALTH-001": {
+      "adminId": "ADMIN-GLOBHEALTH-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
+      "username": "admin_globalhealth",
+      "password": "Admin123!",
+      "created": "2025-01-16"
+    }
+  },
+  "entities": {
+    "WHO-001": {
+      "id": "WHO-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "name": "WHO",
       "fullName": "World Health Organization",
       "sector": "healthcare",
+      "role": "member",
+      "status": "active",
       "description": "International public health organization coordinating health initiatives and emergency responses worldwide",
       "duty": "Set global health standards, coordinate pandemic responses, and provide technical support to countries",
       "fundingSource": "Member state contributions (20%), voluntary donations from governments and foundations (80%)",
       "budget": 2400000000,
       "founded": 1948,
-      "location": "Geneva, Switzerland",
-      "status": "active"
+      "location": "Geneva, Switzerland"
     },
-    {
-      "id": 2,
+    "UNICEF-001": {
+      "id": "UNICEF-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "name": "UNICEF",
       "fullName": "United Nations Children's Fund",
       "sector": "nonprofit",
+      "role": "member",
+      "status": "active",
       "description": "Global humanitarian organization focused on children's rights, survival, development and protection",
       "duty": "Provide emergency relief, education, healthcare and nutrition programs for children in crisis zones",
       "fundingSource": "Voluntary contributions from governments (70%), private sector partnerships (20%), individual donations (10%)",
       "budget": 7200000000,
       "founded": 1946,
-      "location": "New York City, United States",
-      "status": "active"
+      "location": "New York City, United States"
     },
-    {
-      "id": 3,
+    "REDC-001": {
+      "id": "REDC-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "name": "Red Cross",
       "fullName": "International Committee of the Red Cross",
       "sector": "nonprofit",
+      "role": "member",
+      "status": "active",
       "description": "Humanitarian organization providing emergency assistance, disaster relief and education in communities worldwide",
       "duty": "Protect victims of armed conflict, provide disaster response, and promote humanitarian law compliance",
       "fundingSource": "Government donations (65%), public fundraising (25%), corporate partnerships (10%)",
       "budget": 2100000000,
       "founded": 1863,
-      "location": "Geneva, Switzerland",
-      "status": "active"
+      "location": "Geneva, Switzerland"
     },
-    {
-      "id": 4,
+    "MSF-001": {
+      "id": "MSF-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "name": "MSF",
       "fullName": "Médecins Sans Frontières",
       "sector": "healthcare",
+      "role": "member",
+      "status": "active",
       "description": "International medical humanitarian organization delivering emergency aid to people affected by conflict, epidemics, and disasters",
       "duty": "Provide emergency medical care in conflict zones, treat epidemic diseases, and operate mobile clinics",
       "fundingSource": "Private individual donations (96%), institutional funding (4%)",
       "budget": 1900000000,
       "founded": 1971,
-      "location": "Geneva, Switzerland",
-      "status": "active"
+      "location": "Geneva, Switzerland"
     },
-    {
-      "id": 5,
+    "CDC-001": {
+      "id": "CDC-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "name": "CDC",
       "fullName": "Centers for Disease Control and Prevention",
       "sector": "government",
+      "role": "member",
+      "status": "active",
       "description": "National public health institute leading science-based disease prevention and health promotion initiatives",
       "duty": "Monitor and investigate disease outbreaks, develop prevention strategies, and provide health guidelines",
       "fundingSource": "Federal government appropriations (85%), user fees and reimbursements (15%)",
       "budget": 15400000000,
       "founded": 1946,
-      "location": "Atlanta, Georgia, United States",
-      "status": "active"
+      "location": "Atlanta, Georgia, United States"
     },
-    {
-      "id": 6,
+    "GAVI-001": {
+      "id": "GAVI-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "name": "GAVI",
       "fullName": "Global Alliance for Vaccines and Immunization",
       "sector": "healthcare",
+      "role": "member",
+      "status": "active",
       "description": "Public-private partnership increasing access to immunization in poor countries through vaccine procurement and health system strengthening",
       "duty": "Accelerate vaccine access, strengthen immunization systems, and negotiate affordable vaccine prices",
       "fundingSource": "Donor governments (60%), Bill & Melinda Gates Foundation (20%), private sector (10%), innovative financing (10%)",
       "budget": 1600000000,
       "founded": 2000,
-      "location": "Geneva, Switzerland",
-      "status": "active"
+      "location": "Geneva, Switzerland"
     },
-    {
-      "id": 7,
+    "WBANK-001": {
+      "id": "WBANK-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "name": "World Bank",
       "fullName": "World Bank Group",
       "sector": "business",
+      "role": "member",
+      "status": "active",
       "description": "International financial institution providing loans and grants to governments for capital projects and economic development",
       "duty": "Finance infrastructure projects, reduce poverty through economic development, and provide technical expertise",
       "fundingSource": "Bond issuances in capital markets (70%), member country subscriptions (20%), loan repayments (10%)",
       "budget": 43000000000,
       "founded": 1944,
-      "location": "Washington, D.C., United States",
-      "status": "active"
+      "location": "Washington, D.C., United States"
     },
-    {
-      "id": 8,
+    "GATES-001": {
+      "id": "GATES-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "name": "Gates Foundation",
       "fullName": "Bill & Melinda Gates Foundation",
       "sector": "nonprofit",
+      "role": "member",
+      "status": "active",
       "description": "Private philanthropic organization focused on global health, poverty alleviation, and expanding educational opportunities",
       "duty": "Fund health innovation, support vaccine development, improve agricultural productivity in developing countries",
       "fundingSource": "Endowment from Bill and Melinda Gates (95%), Warren Buffett contributions (5%)",
       "budget": 6700000000,
       "founded": 2000,
-      "location": "Seattle, Washington, United States",
-      "status": "active"
+      "location": "Seattle, Washington, United States"
     },
-    {
-      "id": 9,
+    "HARV-001": {
+      "id": "HARV-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "name": "Harvard",
       "fullName": "Harvard University",
       "sector": "education",
+      "role": "member",
+      "status": "active",
       "description": "Private Ivy League research university conducting advanced medical and public health research",
       "duty": "Conduct health policy research, train global health professionals, and develop innovative treatment protocols",
       "fundingSource": "Endowment returns (35%), research grants (30%), tuition and fees (20%), donations (15%)",
       "budget": 5400000000,
       "founded": 1636,
-      "location": "Cambridge, Massachusetts, United States",
-      "status": "active"
+      "location": "Cambridge, Massachusetts, United States"
     },
-    {
-      "id": 10,
+    "OXFD-001": {
+      "id": "OXFD-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "name": "Oxford",
       "fullName": "University of Oxford",
       "sector": "education",
+      "role": "member",
+      "status": "active",
       "description": "Collegiate research university leading vaccine development and global health research initiatives",
       "duty": "Develop vaccines and treatments, conduct epidemiological research, and train healthcare leaders",
       "fundingSource": "Research grants (40%), endowment and investments (25%), tuition fees (20%), government funding (15%)",
       "budget": 2800000000,
       "founded": 1096,
-      "location": "Oxford, United Kingdom",
-      "status": "active"
+      "location": "Oxford, United Kingdom"
     }
-  ],
-  "meetings": [
-    {
-      "id": 1,
+  },
+  "meetings": {
+    "MEET-001": {
+      "id": "MEET-001",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Global Health Summit",
       "date": "2024-01-15",
       "purpose": "Establish global health priorities and vaccination strategies for developing nations",
       "outcome": "Agreed on accelerated vaccine distribution framework for 50 countries by Q2 2024",
-      "participants": [1, 2, 6]
+      "participants": ["WHO-001", "UNICEF-001", "GAVI-001"]
     },
-    {
-      "id": 2,
+    "MEET-002": {
+      "id": "MEET-002",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Disease Prevention Workshop",
       "date": "2024-02-20",
       "purpose": "Share best practices for infectious disease prevention and outbreak response protocols",
       "outcome": "Developed unified early warning system for disease outbreaks across three continents",
-      "participants": [1, 4, 5]
+      "participants": ["WHO-001", "MSF-001", "CDC-001"]
     },
-    {
-      "id": 3,
+    "MEET-003": {
+      "id": "MEET-003",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Humanitarian Aid Coordination",
       "date": "2024-03-10",
       "purpose": "Coordinate relief efforts for regions affected by natural disasters and conflicts",
       "outcome": "Established joint rapid response team with $50M emergency fund allocation",
-      "participants": [2, 3, 8]
+      "participants": ["UNICEF-001", "REDC-001", "GATES-001"]
     },
-    {
-      "id": 4,
+    "MEET-004": {
+      "id": "MEET-004",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Emergency Response Planning",
       "date": "2024-04-05",
       "purpose": "Plan emergency medical response procedures for crisis situations in conflict zones",
       "outcome": "Created standardized emergency protocol for field hospitals in high-risk areas",
-      "participants": [3, 4]
+      "participants": ["REDC-001", "MSF-001"]
     },
-    {
-      "id": 5,
+    "MEET-005": {
+      "id": "MEET-005",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Vaccine Distribution Strategy",
       "date": "2024-05-12",
       "purpose": "Design efficient vaccine supply chain and cold storage solutions for remote areas",
       "outcome": "Approved $120M investment in cold chain infrastructure across 35 countries",
-      "participants": [1, 2, 5, 6]
+      "participants": ["WHO-001", "UNICEF-001", "CDC-001", "GAVI-001"]
     },
-    {
-      "id": 6,
+    "MEET-006": {
+      "id": "MEET-006",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Public Health Policy Review",
       "date": "2024-06-18",
       "purpose": "Review and update public health policies based on recent pandemic learnings",
       "outcome": "Recommended 12 policy changes to improve pandemic preparedness and response",
-      "participants": [1, 5, 9]
+      "participants": ["WHO-001", "CDC-001", "HARV-001"]
     },
-    {
-      "id": 7,
+    "MEET-007": {
+      "id": "MEET-007",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Crisis Management Training",
       "date": "2024-07-22",
       "purpose": "Train field staff on crisis management and emergency response in humanitarian contexts",
       "outcome": "Certified 250 personnel in advanced crisis management protocols",
-      "participants": [2, 3, 4]
+      "participants": ["UNICEF-001", "REDC-001", "MSF-001"]
     },
-    {
-      "id": 8,
+    "MEET-008": {
+      "id": "MEET-008",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Health Data Sharing Agreement",
       "date": "2024-08-30",
       "purpose": "Establish secure framework for sharing health data across international organizations",
       "outcome": "Signed data sharing agreement enabling real-time health surveillance across 40 nations",
-      "participants": [1, 4, 9, 10]
+      "participants": ["WHO-001", "MSF-001", "HARV-001", "OXFD-001"]
     },
-    {
-      "id": 9,
+    "MEET-009": {
+      "id": "MEET-009",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Disaster Relief Coordination",
       "date": "2024-09-14",
       "purpose": "Coordinate disaster relief operations and resource allocation for recent flooding events",
       "outcome": "Deployed relief to 15 affected regions with coordinated logistics saving 30% costs",
-      "participants": [3, 2, 8]
+      "participants": ["REDC-001", "UNICEF-001", "GATES-001"]
     },
-    {
-      "id": 10,
+    "MEET-010": {
+      "id": "MEET-010",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Annual Health Conference",
       "date": "2024-10-25",
       "purpose": "Review annual health metrics and set strategic goals for the upcoming year",
       "outcome": "Set ambitious targets to reduce child mortality by 15% and increase vaccination rates by 20%",
-      "participants": [1, 2, 4, 5, 6]
+      "participants": ["WHO-001", "UNICEF-001", "MSF-001", "CDC-001", "GAVI-001"]
     },
-    {
-      "id": 11,
+    "MEET-011": {
+      "id": "MEET-011",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Education in Health Workshop",
       "date": "2024-11-05",
       "purpose": "Develop educational programs to improve health literacy in underserved communities",
       "outcome": "Launched 10 pilot health education programs in partnership with local schools",
-      "participants": [9, 10, 1]
+      "participants": ["HARV-001", "OXFD-001", "WHO-001"]
     },
-    {
-      "id": 12,
+    "MEET-012": {
+      "id": "MEET-012",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Funding Opportunities Discussion",
       "date": "2024-11-20",
       "purpose": "Explore funding opportunities and investment strategies for health initiatives",
       "outcome": "Secured $200M in funding commitments for vaccine research and distribution programs",
-      "participants": [7, 8, 6]
+      "participants": ["WBANK-001", "GATES-001", "GAVI-001"]
     },
-    {
-      "id": 13,
+    "MEET-013": {
+      "id": "MEET-013",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Research Collaboration Meeting",
       "date": "2024-12-01",
       "purpose": "Establish research partnerships for developing new treatment protocols and medications",
       "outcome": "Initiated 5 joint research projects on infectious disease treatment innovations",
-      "participants": [9, 10, 4]
+      "participants": ["HARV-001", "OXFD-001", "MSF-001"]
     },
-    {
-      "id": 14,
+    "MEET-014": {
+      "id": "MEET-014",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Global Health Financing",
       "date": "2024-12-10",
       "purpose": "Discuss sustainable financing models for long-term global health programs",
       "outcome": "Approved innovative financing mechanism generating $500M over 5 years",
-      "participants": [7, 1, 8]
+      "participants": ["WBANK-001", "WHO-001", "GATES-001"]
     },
-    {
-      "id": 15,
+    "MEET-015": {
+      "id": "MEET-015",
+      "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Emergency Preparedness Training",
       "date": "2024-12-15",
       "purpose": "Conduct emergency preparedness drills and update response protocols for health workers",
       "outcome": "Trained 500 healthcare workers and updated emergency response guidelines",
-      "participants": [5, 3, 2]
+      "participants": ["CDC-001", "REDC-001", "UNICEF-001"]
     }
-  ]
+  }
 }

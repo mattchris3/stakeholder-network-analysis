@@ -1,37 +1,56 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set } from 'firebase/database';
-import fs from 'fs';
+import { readFileSync } from 'fs';
 
 const firebaseConfig = {
-    databaseURL: "https://test-data-747c4-default-rtdb.firebaseio.com/"
+  databaseURL: "https://test-data-747c4-default-rtdb.firebaseio.com/"
 };
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-const data = JSON.parse(fs.readFileSync('./data.json', 'utf8'));
-
 async function uploadData() {
-    try {
-        console.log('Uploading entities...');
-        
-        for (const entity of data.entities) {
-            await set(ref(database, `entities/${entity.id}`), entity);
-        }
-        console.log('Entities uploaded successfully');
-
-        console.log('Uploading meetings...');
-        for (const meeting of data.meetings) {
-            await set(ref(database, `meetings/${meeting.id}`), meeting);
-        }
-        console.log('Meetings uploaded successfully');
-
-        console.log('All data uploaded to Firebase');
-        process.exit(0);
-    } catch (error) {
-        console.error('Error uploading data:', error);
-        process.exit(1);
+  try {
+    const data = JSON.parse(readFileSync('./data.json', 'utf8'));
+    
+    console.log('Uploading unities');
+    if (data.unities) {
+      for (const [unityId, unity] of Object.entries(data.unities)) {
+        await set(ref(database, `unities/${unityId}`), unity);
+        console.log(`Uploaded unity: ${unityId}`);
+      }
     }
+    
+    console.log('\nUploading admins');
+    if (data.admins) {
+      for (const [adminId, admin] of Object.entries(data.admins)) {
+        await set(ref(database, `admins/${adminId}`), admin);
+        console.log(`Uploaded admin: ${adminId}`);
+      }
+    }
+    
+    console.log('\nUploading entities');
+    if (data.entities) {
+      for (const [entityId, entity] of Object.entries(data.entities)) {
+        await set(ref(database, `entities/${entityId}`), entity);
+        console.log(`Uploaded entity: ${entityId}`);
+      }
+    }
+    
+    console.log('\nUploading meetings');
+    if (data.meetings) {
+      for (const [meetingId, meeting] of Object.entries(data.meetings)) {
+        await set(ref(database, `meetings/${meetingId}`), meeting);
+        console.log(`Uploaded meeting: ${meetingId}`);
+      }
+    }
+    
+    process.exit(0);
+    
+  } catch (error) {
+    console.error('Error uploading data:', error);
+    process.exit(1);
+  }
 }
 
 uploadData();
