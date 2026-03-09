@@ -1,5 +1,5 @@
 import { database } from '../config.js';
-import { ref, set, remove, get, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { ref, set, remove, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 import { allEntities, allMeetings } from './main.js';
 
 export function displayModifyTables() {
@@ -9,6 +9,8 @@ export function displayModifyTables() {
 
 function displayModifyEntitiesTable() {
     const tbody = document.getElementById('modifyEntitiesTable');
+    if (!tbody) return;
+    
     tbody.innerHTML = '';
 
     allEntities.forEach(entity => {
@@ -20,10 +22,10 @@ function displayModifyEntitiesTable() {
             <td>${entity.sector}</td>
             <td>
                 <div class="action-buttons">
-                    <button class="btn btn-sm btn-primary" onclick="editEntity(${entity.id})">
+                    <button class="btn btn-sm btn-primary" onclick="editEntity('${entity.id}')">
                         <i class="fas fa-edit"></i> Edit
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteEntity(${entity.id})">
+                    <button class="btn btn-sm btn-danger" onclick="deleteEntity('${entity.id}')">
                         <i class="fas fa-trash"></i> Delete
                     </button>
                 </div>
@@ -35,6 +37,8 @@ function displayModifyEntitiesTable() {
 
 function displayModifyMeetingsTable() {
     const tbody = document.getElementById('modifyMeetingsTable');
+    if (!tbody) return;
+    
     tbody.innerHTML = '';
 
     allMeetings.forEach(meeting => {
@@ -47,10 +51,10 @@ function displayModifyMeetingsTable() {
             <td>${participantCount}</td>
             <td>
                 <div class="action-buttons">
-                    <button class="btn btn-sm btn-primary" onclick="editMeeting(${meeting.id})">
+                    <button class="btn btn-sm btn-primary" onclick="editMeeting('${meeting.id}')">
                         <i class="fas fa-edit"></i> Edit
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteMeeting(${meeting.id})">
+                    <button class="btn btn-sm btn-danger" onclick="deleteMeeting('${meeting.id}')">
                         <i class="fas fa-trash"></i> Delete
                     </button>
                 </div>
@@ -60,21 +64,40 @@ function displayModifyMeetingsTable() {
     });
 }
 
-function showAddEntityForm() {
-    displayModifyTables();
+function switchView(formName) {
     document.getElementById('modifyTablesView').style.display = 'none';
-    document.getElementById('addEntityFormView').style.display = 'block';
+    document.getElementById('addEntityFormView').style.display = 'none';
+    document.getElementById('editEntityFormView').style.display = 'none';
+
+    if (formName === 'tables'){
+        document.getElementById('modifyTablesView').style.display = 'block';
+    }
+    else if (formName === 'add'){
+        document.getElementById('addEntityFormView').style.display = 'block';
+    }
+    else if (formName === 'edit'){
+        document.getElementById('editEntityFormView').style.display = 'block';
+    }
+}
+
+function showAddEntityForm() {
+    switchView('add');
+}
+
+function showAddMeetingForm() {
+    alert('Add meeting functionality coming soon!');
 }
 
 function backToModifyTables() {
-    document.getElementById('modifyTablesView').style.display = 'block';
-    document.getElementById('addEntityFormView').style.display = 'none';
+    switchView('tables');
 }
 
 async function editEntity(entityId) {
-    displayModifyTables();
     const entity = allEntities.find(e => e.id === entityId);
-    if (!entity) return;
+    if (!entity) {
+        alert('Entity not found');
+        return;
+    }
 
     document.getElementById('editEntityId').value = entity.id;
     document.getElementById('editEntityName').value = entity.name;
@@ -88,8 +111,35 @@ async function editEntity(entityId) {
     document.getElementById('editEntityFounded').value = entity.founded || '';
     document.getElementById('editEntityLocation').value = entity.location || '';
 
-    document.getElementById('modifyTablesView').style.display = 'none';
-    document.getElementById('editEntityFormView').style.display = 'block';
+    switchView('edit');
+}
+
+async function deleteEntity(entityId) {
+    if (!confirm('Are you sure you want to delete this organization?')) {
+        return;
+    }
+    
+    try {
+        await remove(ref(database, `entities/${entityId}`));
+        alert('Organization deleted successfully!');
+        location.reload();
+    } catch (error) {
+        alert('Error deleting organization: ' + error.message);
+    }
+}
+
+async function deleteMeeting(meetingId) {
+    if (!confirm('Are you sure you want to delete this meeting?')) {
+        return;
+    }
+    
+    try {
+        await remove(ref(database, `meetings/${meetingId}`));
+        alert('Meeting deleted successfully!');
+        location.reload();
+    } catch (error) {
+        alert('Error deleting meeting: ' + error.message);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -98,28 +148,38 @@ document.addEventListener('DOMContentLoaded', () => {
         addEntityForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const unityId = sessionStorage.getItem('unityId');
+            if (!unityId) {
+                alert('No unity ID found');
+                return;
+            }
+            
+            const maxId = allEntities.reduce((max, entity) => {
+                const num = parseInt(entity.id.split('-')[1]);
+                return num > max ? num : max;
+            }, 0);
+            const newId = `ORG-${String(maxId + 1).padStart(3, '0')}`;
+            
             const newEntity = {
-                id: allEntities.length + 1,
+                id: newId,
+                unityId: unityId,
                 name: document.getElementById('entityName').value,
                 fullName: document.getElementById('entityFullName').value,
                 sector: document.getElementById('entitySector').value,
+                role: 'member',
+                status: document.getElementById('entityStatus').value || 'active',
                 description: document.getElementById('entityDescription').value,
                 duty: document.getElementById('entityDuty').value,
                 fundingSource: document.getElementById('entityFunding').value,
                 budget: parseInt(document.getElementById('entityBudget').value) || 0,
                 founded: parseInt(document.getElementById('entityFounded').value) || new Date().getFullYear(),
-                location: document.getElementById('entityLocation').value,
-                status: document.getElementById('entityStatus').value
+                location: document.getElementById('entityLocation').value
             };
             
             try {
-                await set(ref(database, `entities/${newEntity.id}`), newEntity);
+                await set(ref(database, `entities/${newId}`), newEntity);
                 alert('Organization added successfully!');
-                addEntityForm.reset();
                 location.reload();
-                setTimeout(() => {
-                    document.querySelector('[data-tab="modify"]').click();
-                }, 100);
             } catch (error) {
                 alert('Error adding organization: ' + error.message);
             }
@@ -132,8 +192,15 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             
             const entityId = document.getElementById('editEntityId').value;
+            const entity = allEntities.find(e => e.id === entityId);
+            
+            if (!entity) {
+                alert('Entity not found');
+                return;
+            }
+            
             const updatedEntity = {
-                id: parseInt(entityId),
+                ...entity,
                 name: document.getElementById('editEntityName').value,
                 fullName: document.getElementById('editEntityFullName').value,
                 sector: document.getElementById('editEntitySector').value,
@@ -147,13 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             
             try {
-                const entityId = document.getElementById('editEntityId').value;
-                await set(ref(database, `entities/${String(entityId)}`), updatedEntity);
+                await set(ref(database, `entities/${entityId}`), updatedEntity);
                 alert('Organization updated successfully!');
                 location.reload();
-                setTimeout(() => {
-                    document.querySelector('[data-tab="modify"]').click();
-                }, 100);
             } catch (error) {
                 alert('Error updating organization: ' + error.message);
             }
@@ -161,24 +224,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-async function deleteEntity(entityId) {
-    if (!confirm('Are you sure you want to delete this organization?')) {
-        return;
-    }
-    
-    try {
-        await remove(ref(database, `entities/${entityId}`));
-        alert('Organization deleted successfully!');
-        location.reload();
-        setTimeout(() => {
-            document.querySelector('[data-tab="modify"]').click();
-        }, 100);
-    } catch (error) {
-        alert('Error deleting organization: ' + error.message);
-    }
-}
-
 window.deleteEntity = deleteEntity;
+window.deleteMeeting = deleteMeeting;
 window.showAddEntityForm = showAddEntityForm;
+window.showAddMeetingForm = showAddMeetingForm;
 window.backToModifyTables = backToModifyTables;
 window.editEntity = editEntity;

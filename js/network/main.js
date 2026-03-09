@@ -1,13 +1,9 @@
 import { loadVisualization, applyFilters, clearFilters } from './data.js';
-import { 
-    resetZoom, 
+import {  
     selectEntity, 
     switchTab, 
-    toggleExportMenu, 
-    exportPNG, 
-    exportJSON, 
-    exportCSV 
-} from './visualization.js';
+} from './sidebar.js';
+import { resetZoom } from './visualization.js';
 
 window.addEventListener('load', () => {
     loadVisualization();
@@ -23,10 +19,6 @@ window.resetZoom = resetZoom;
 window.clearFilters = clearFilters;
 window.selectEntity = selectEntity;
 window.switchTab = switchTab;
-window.toggleExportMenu = toggleExportMenu;
-window.exportPNG = exportPNG;
-window.exportJSON = exportJSON;
-window.exportCSV = exportCSV;
 
 document.addEventListener('click', function(event) {
     const exportMenu = document.getElementById('exportMenu');

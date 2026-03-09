@@ -1,8 +1,10 @@
-import { allNodes, allLinks, currentNodes, currentLinks } from './data.js';
+import { allLinks } from './data.js';
+import { showEntityDetails } from './sidebar.js';
 
 let simulation = null;
 let svg, g, zoom;
 
+// D3 initialization
 export function createD3Visualization(nodes, links) {
     d3.select('#network').selectAll('svg').remove();
 
@@ -18,28 +20,83 @@ export function createD3Visualization(nodes, links) {
     g = svg.append('g');
     
     zoom = d3.zoom()
-        .scaleExtent([0.8, 2.8])
+        .scaleExtent([0.5, 3])
         .on('zoom', (event) => {
             g.attr('transform', event.transform);
-        })
-        .filter(event => {
-            return event.type === 'wheel' || event.type === 'dblclick';
         });
 
     svg.call(zoom);
+
+    svg.on('wheel.zoom', function(event) {
+        event.preventDefault();
+        
+        const currentTransform = d3.zoomTransform(svg.node());
+        const delta = -event.deltaY * 0.002;
+        const newScale = Math.max(0.5, Math.min(3, currentTransform.k * Math.exp(delta)));
+        
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        const newTransform = d3.zoomIdentity
+            .translate(centerX, centerY)
+            .scale(newScale)
+            .translate(-centerX, -centerY);
+        
+        svg.transition()
+            .duration(50)
+            .call(zoom.transform, newTransform);
+    });
+    
+    svg.on('dblclick.zoom', function(event) {
+        event.preventDefault();
+        
+        const currentTransform = d3.zoomTransform(svg.node());
+        const newScale = currentTransform.k === 1 ? 2 : 1;
+        
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        const newTransform = d3.zoomIdentity
+            .translate(centerX, centerY)
+            .scale(newScale)
+            .translate(-centerX, -centerY);
+        
+        svg.transition()
+            .duration(300)
+            .call(zoom.transform, newTransform);
+    });
 
     simulation = d3.forceSimulation(nodes)
         .force('link', d3.forceLink(links).id(d => d.id).distance(150))
         .force('charge', d3.forceManyBody().strength(-800))
         .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius(d => Math.sqrt(d.meetings) * 5 + 25));
+        .force('collision', d3.forceCollide().radius(d => Math.sqrt(d.meetings) * 5 + 30));
 
     const link = g.append('g')
         .selectAll('line')
         .data(links)
         .enter().append('line')
-        .attr('class', 'link')
-        .attr('stroke-width', d => Math.sqrt(d.value) * 2);
+        .attr('class', d => {
+            if (d.value >= 6) return 'link link-strong';
+            if (d.value >= 3) return 'link link-medium';
+            return 'link link-weak';
+        })
+        .attr('stroke-width', d => {
+            if (d.value >= 6) return 4;
+            if (d.value >= 3) return 2.5;
+            return 1.5;
+        })
+        .attr('stroke', d => {
+            if (d.value >= 6) return '#000000';
+            if (d.value >= 3) return '#4CAF50';
+            return '#f44336';
+        })
+        .attr('stroke-opacity', d => {
+            if (d.value >= 6) return 0.8;
+            if (d.value >= 3) return 0.7;
+            return 0.6;
+        })
+        .attr('stroke-dasharray', d => d.value < 3 ? '5,5' : '0');
 
     const node = g.append('g')
         .selectAll('circle')
@@ -60,12 +117,29 @@ export function createD3Visualization(nodes, links) {
     const tooltip = d3.select('#tooltip');
 
     node.on('mouseover', (event, d) => {
+            const connections = allLinks.filter(link => 
+                link.source.id === d.id || link.target.id === d.id ||
+                link.source === d.id || link.target === d.id
+            );
+            
+            const strongLinks = connections.filter(c => c.value >= 6).length;
+            const mediumLinks = connections.filter(c => c.value >= 3 && c.value < 6).length;
+            const weakLinks = connections.filter(c => c.value < 3).length;
+            
             tooltip.style('display', 'block')
                 .html(`
                     <strong>${d.fullName}</strong><br/>
-                    Sector: ${d.sector}<br/>
-                    Meetings: ${d.meetings}<br/>
-                    ID: ${d.id}
+                    <span style="color: #888;">${d.name}</span><br/>
+                    <hr style="margin: 5px 0; border-color: #444;">
+                    <strong>Sector:</strong> ${d.sector}<br/>
+                    <strong>Meetings:</strong> ${d.meetings}<br/>
+                    <strong>Total Collaborations:</strong> ${connections.length}<br/>
+                    <div style="margin-top: 8px; font-size: 12px;">
+                        <div style="color: #000;">━ Strong (6+): ${strongLinks}</div>
+                        <div style="color: #4CAF50;">━ Medium (3-5): ${mediumLinks}</div>
+                        <div style="color: #f44336;">┈ Weak (1-2): ${weakLinks}</div>
+                    </div>
+                    ${d.description ? `<hr style="margin: 5px 0; border-color: #444;"><small style="color: #aaa;">${d.description.substring(0, 100)}...</small>` : ''}
                 `);
         })
         .on('mousemove', (event) => {
@@ -97,6 +171,7 @@ export function createD3Visualization(nodes, links) {
     });
 }
 
+// D3 add-on features
 function getSectorColor(sector) {
     const sectorColors = {
         'healthcare': '#4CAF50',
@@ -153,133 +228,4 @@ export function resetZoom() {
     svg.transition()
         .duration(750)
         .call(zoom.transform, d3.zoomIdentity);
-}
-
-export function updateStatistics() {
-    document.getElementById('entityCount').textContent = allNodes.length;
-    document.getElementById('connectionCount').textContent = allLinks.length;
-    document.getElementById('meetingCount').textContent = 
-        allNodes.reduce((sum, node) => sum + node.meetings, 0);
-    const avgConn = allLinks.length > 0 ? 
-        (allLinks.length * 2 / allNodes.length).toFixed(1) : 0;
-    document.getElementById('avgConnections').textContent = avgConn;
-}
-
-export function updateSidebarTopEntities() {
-    const topEntities = [...allNodes]
-        .sort((a, b) => b.meetings - a.meetings)
-        .slice(0, 5);
-
-    const listHTML = topEntities.map(entity => `
-        <li class="entity-item" onclick="window.selectEntity(${entity.id})">
-            <div>
-                <div class="entity-name">${entity.name}</div>
-                <small style="color: #666;">${entity.sector}</small>
-            </div>
-            <span class="entity-count">${entity.meetings} meetings</span>
-        </li>
-    `).join('');
-
-    document.getElementById('topEntities').innerHTML = listHTML;
-}
-
-export function selectEntity(entityId) {
-    const entity = allNodes.find(node => node.id === entityId);
-    if (entity) {
-        showEntityDetails(entity);
-        highlightNode(entityId);
-    }
-}
-
-function showEntityDetails(entity) {
-    switchTab('details');
-    
-    const connections = allLinks.filter(link => 
-        link.source.id === entity.id || link.target.id === entity.id ||
-        link.source === entity.id || link.target === entity.id
-    ).length;
-
-    const detailsHTML = `
-        <div class="details-panel">
-            <h4>${entity.fullName}</h4>
-            <div class="detail-row">
-                <span class="detail-label">ID:</span>
-                <span class="detail-value">${entity.id}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Short Name:</span>
-                <span class="detail-value">${entity.name}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Sector:</span>
-                <span class="detail-value">${entity.sector}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Total Meetings:</span>
-                <span class="detail-value">${entity.meetings}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Connections:</span>
-                <span class="detail-value">${connections}</span>
-            </div>
-        </div>
-    `;
-
-    document.getElementById('entityDetails').innerHTML = detailsHTML;
-    document.getElementById('entityDetails').style.display = 'block';
-}
-
-export function switchTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    if (tabName === 'overview') {
-        document.getElementById('overview-tab').classList.add('active');
-        document.querySelectorAll('.tab-btn')[0].classList.add('active');
-    } else {
-        document.getElementById('details-tab').classList.add('active');
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
-    }
-}
-
-export function toggleExportMenu() {
-    const menu = document.getElementById('exportMenu');
-    menu.classList.toggle('show');
-}
-
-export function exportPNG() {
-    alert('PNG export functionality would be implemented here');
-    toggleExportMenu();
-}
-
-export function exportJSON() {
-    const data = {
-        nodes: currentNodes, 
-        links: currentLinks 
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'network-data.json';
-    a.click();
-    toggleExportMenu();
-}
-
-export function exportCSV() {
-    let csv = 'Entity ID,Entity Name,Sector,Meetings\n';
-    currentNodes.forEach(node => {  
-        csv += `${node.id},"${node.fullName}",${node.sector},${node.meetings}\n`;
-    });
-    const blob = new Blob([csv], {type: 'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'network-entities.csv';
-    a.click();
-    toggleExportMenu();
 }

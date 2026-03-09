@@ -1,69 +1,82 @@
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
+.admin-modify-section {
     background: white;
-    margin: 5% auto;
-    padding: 30px;
+    padding: 25px;
     border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.close {
-    position: absolute;
-    right: 20px;
-    top: 15px;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #999;
+.admin-modify-section h3 {
+    color: #1e3c72;
+    margin: 0;
 }
 
-.close:hover {
-    color: #333;
+.table-container {
+    overflow-x: auto;
+    margin-top: 15px;
 }
 
-.modal h2 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.modal .form-group {
-    margin-bottom: 15px;
-}
-
-.modal label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #333;
-}
-
-.modal input,
-.modal select,
-.modal textarea {
+.data-table {
     width: 100%;
-    padding: 10px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
+    border-collapse: collapse;
+    background: white;
+}
+
+.data-table thead {
+    background: linear-gradient(135deg, #1e3c72 0%, #2c5aa0 100%);
+    color: white;
+}
+
+.data-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
     font-size: 14px;
 }
 
-.modal input:focus,
-.modal select:focus,
-.modal textarea:focus {
-    outline: none;
-    border-color: #3498db;
+.data-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.data-table tbody tr:hover {
+    background: #f5f7fa;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-sm.btn-primary {
+    background: linear-gradient(135deg, #1e3c72 0%, #2c5aa0 100%);
+    color: white;
+}
+
+.btn-sm.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3);
+}
+
+.btn-sm.btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+}
+
+.btn-sm.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
 .form-container {
@@ -71,13 +84,12 @@
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    max-width: 800px;
-    margin: 20px 0;
+    margin-top: 20px;
 }
 
 .form-container h3 {
     margin-bottom: 25px;
-    color: #333;
+    color: #1e3c72;
 }
 
 .form-row {
@@ -108,26 +120,85 @@
     border-radius: 8px;
     font-size: 14px;
     font-family: inherit;
+    box-sizing: border-box;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: #2c5aa0;
 }
 
 .form-group textarea {
     resize: vertical;
+    min-height: 80px;
 }
 
 #addEntityFormView,
 #editEntityFormView {
     max-width: 900px;
-    margin: 0 auto;
 }
 
-#addEntityFormView .btn:first-child,
-#editEntityFormView .btn:first-child {
-    margin-bottom: 20px;
+#modifyTablesView {
+    animation: fadeIn 0.3s ease;
+}
+
+#addEntityFormView,
+#editEntityFormView {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #1e3c72 0%, #2c5aa0 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
 }

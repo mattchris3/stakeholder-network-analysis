@@ -15,14 +15,14 @@
 
 .stat-box i {
     font-size: 40px;
-    color: #3498db;
+    color: #2c5aa0;
     margin-bottom: 15px;
 }
 
 .stat-number {
     font-size: 36px;
     font-weight: 700;
-    color: #333;
+    color: #1e3c72;
     margin-bottom: 5px;
 }
 
@@ -54,27 +54,40 @@
 .view-btn i {
     font-size: 32px;
     color: #666;
+    transition: all 0.3s;
 }
 
 .view-btn span {
     font-size: 14px;
     font-weight: 600;
     color: #333;
+    transition: all 0.3s;
 }
 
 .view-btn:hover {
-    border-color: #3498db;
+    border-color: #2c5aa0;
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.2);
 }
 
 .view-btn.active {
-    background: #3498db;
-    border-color: #3498db;
+    background: linear-gradient(135deg, #2c5aa0, #1e3c72);
+    border-color: #2c5aa0;
 }
 
 .view-btn.active i,
 .view-btn.active span {
     color: white;
+}
+
+.organizations-section,
+.meetings-section {
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .data-section {
@@ -87,7 +100,7 @@
 
 .data-section h3 {
     margin-bottom: 20px;
-    color: #333;
+    color: #1e3c72;
     font-size: 20px;
 }
 
@@ -101,7 +114,7 @@
 
 .modify-section h3 {
     margin-bottom: 15px;
-    color: #333;
+    color: #1e3c72;
     font-size: 20px;
 }
 
@@ -119,13 +132,32 @@
 }
 
 .btn-primary {
-    background: #3498db;
+    background: linear-gradient(135deg, #2c5aa0, #1e3c72);
     color: white;
-    margin-bottom: 20px;
 }
 
 .btn-primary:hover {
-    background: #2980b9;
+    background: linear-gradient(135deg, #1e3c72, #163059);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
 }
 
 .btn-sm {
@@ -136,6 +168,7 @@
 .action-buttons {
     display: flex;
     gap: 8px;
+    justify-content: flex-start;
 }
 
 .settings-section {
@@ -148,7 +181,7 @@
 
 .settings-section h3 {
     margin-bottom: 20px;
-    color: #333;
+    color: #1e3c72;
     font-size: 20px;
 }
 
@@ -173,7 +206,7 @@
 
 .settings-form input:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: #2c5aa0;
 }
 
 .chart-section {
@@ -181,13 +214,12 @@
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin: 0 auto;
-    max-height: 500px;
+    margin-bottom: 20px;
 }
 
 .chart-section h3 {
     margin-bottom: 20px;
-    color: #333;
+    color: #1e3c72;
     text-align: center;
 }
 
@@ -195,18 +227,19 @@
     display: flex;
     gap: 40px;
     align-items: center;
-    height: 100%;
+    justify-content: center;
 }
 
 .chart-container canvas {
-    max-width: 500px;
+    max-width: 400px;
     max-height: 400px;
-    flex: 2;
+    flex-shrink: 0;
 }
 
 .sector-list {
     flex: 1;
     min-width: 200px;
+    max-width: 300px;
 }
 
 .sector-item {
@@ -217,85 +250,24 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: all 0.2s;
+}
+
+.sector-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
 }
 
 .sector-name {
     font-weight: 600;
-    color: #333;
+    color: #1e3c72;
 }
 
 .sector-count {
-    background: #3498db;
+    background: linear-gradient(135deg, #2c5aa0, #1e3c72);
     color: white;
     padding: 4px 12px;
     border-radius: 12px;
-    font-size: 14px;
-}
-
-.meeting-detail {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-}
-
-.meeting-detail ul {
-    list-style: none;
-    padding: 0;
-}
-
-.meeting-detail li {
-    padding: 15px;
-    margin-bottom: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #3498db;
-}
-
-.meeting-detail li strong {
-    color: #333;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.data-table tr {
-    transition: all 0.3s;
-}
-
-.data-table tbody tr {
-    background: white;
-}
-
-.data-table tbody tr:hover {
-    background: #e3f2fd;
-    transform: translateX(5px);
-    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
-}
-
-.data-table tbody tr[style*="cursor: pointer"]:hover {
-    cursor: pointer;
-}
-
-.organization-detail {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-}
-
-.organization-detail ul {
-    list-style: none;
-    padding: 0;
-}
-
-.organization-detail li {
-    padding: 15px;
-    margin-bottom: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #3498db;
-}
-
-.organization-detail li strong {
-    color: #333;
-    display: block;
-    margin-bottom: 5px;
+    font-size: 12px;
+    font-weight: 600;
 }

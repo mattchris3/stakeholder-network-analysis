@@ -2,16 +2,21 @@ import { allEntities, allMeetings } from './main.js';
 
 export function displayMeetingsTableView() {
     const tbody = document.getElementById('meetingsTableView');
+    if (!tbody) {
+        console.error('Meetings table not found');
+        return;
+    }
+    
     tbody.innerHTML = '';
 
     allMeetings.forEach(meeting => {
-        const orgCount = meeting.participants ? meeting.participants.length : 0;
+        const orgCount = meeting.participants && Array.isArray(meeting.participants) ? meeting.participants.length : 0;
         const row = document.createElement('tr');
         row.style.cursor = 'pointer';
         row.onclick = () => showMeetingDetails(meeting.id);
         row.innerHTML = `
-            <td>${meeting.title}</td>
-            <td>${meeting.date}</td>
+            <td>${meeting.title || 'Untitled Meeting'}</td>
+            <td>${meeting.date || 'No date'}</td>
             <td>${orgCount}</td>
         `;
         tbody.appendChild(row);
@@ -20,21 +25,31 @@ export function displayMeetingsTableView() {
 
 function showMeetingDetails(meetingId) {
     const meeting = allMeetings.find(m => m.id === meetingId);
-    if (!meeting) return;
+    if (!meeting) {
+        console.error('Meeting not found:', meetingId);
+        return;
+    }
 
-    const participantNames = meeting.participants
-        .map(id => {
-            const entity = allEntities.find(e => e.id === id);
-            return entity ? entity.fullName : `ID: ${id}`;
-        })
-        .join(', ');
+    let participantNames = 'No participants';
+    if (meeting.participants && Array.isArray(meeting.participants) && meeting.participants.length > 0) {
+        participantNames = meeting.participants
+            .map(id => {
+                const entity = allEntities.find(e => e.id === id);
+                return entity ? entity.fullName || entity.name : `ID: ${id}`;
+            })
+            .join(', ');
+    }
 
     const detailContent = `
-        <h2>${meeting.title}</h2>
+        <h2>${meeting.title || 'Untitled Meeting'}</h2>
         <ul>
             <li>
+                <strong>ID:</strong>
+                ${meeting.id}
+            </li>
+            <li>
                 <strong>Date:</strong>
-                ${meeting.date}
+                ${meeting.date || 'Not specified'}
             </li>
             <li>
                 <strong>Purpose:</strong>
@@ -45,20 +60,34 @@ function showMeetingDetails(meetingId) {
                 ${meeting.outcome || 'Not specified'}
             </li>
             <li>
-                <strong>Organizations Attended:</strong>
+                <strong>Number of Participants:</strong>
+                ${meeting.participants ? meeting.participants.length : 0}
+            </li>
+            <li>
+                <strong>Organizations Attended:</strong><br>
                 ${participantNames}
             </li>
         </ul>
     `;
 
-    document.getElementById('meetingDetailContent').innerHTML = detailContent;
-    document.getElementById('meetingsTableContainer').style.display = 'none';
-    document.getElementById('meetingDetail').style.display = 'block';
+    const detailEl = document.getElementById('meetingDetailContent');
+    if (detailEl) {
+        detailEl.innerHTML = detailContent;
+    }
+    
+    const tableContainer = document.getElementById('meetingsTableContainer');
+    const detailContainer = document.getElementById('meetingDetail');
+    
+    if (tableContainer) tableContainer.style.display = 'none';
+    if (detailContainer) detailContainer.style.display = 'block';
 }
 
 function backToMeetingsTable() {
-    document.getElementById('meetingsTableContainer').style.display = 'block';
-    document.getElementById('meetingDetail').style.display = 'none';
+    const tableContainer = document.getElementById('meetingsTableContainer');
+    const detailContainer = document.getElementById('meetingDetail');
+    
+    if (tableContainer) tableContainer.style.display = 'block';
+    if (detailContainer) detailContainer.style.display = 'none';
 }
 
 window.showMeetingDetails = showMeetingDetails;

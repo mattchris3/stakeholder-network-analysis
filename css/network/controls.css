@@ -15,7 +15,7 @@
 }
 
 .controls-header h3 {
-    color: #001F3F;
+    color: #1e3c72;
     font-size: 16px;
     display: flex;
     align-items: center;
@@ -38,8 +38,8 @@
 
 .search-box input:focus {
     outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 3px rgba(76,175,80,0.1);
+    border-color: #2c5aa0;
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
 }
 
 .search-box i {
@@ -82,13 +82,13 @@ select, button {
 }
 
 select:hover, button:hover {
-    border-color: #4CAF50;
+    border-color: #2c5aa0;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 button {
-    background: linear-gradient(135deg, #001F3F 0%, #003366 100%);
+    background: linear-gradient(135deg, #2c5aa0 0%, #1e3c72 100%);
     color: white;
     border: none;
     font-weight: 600;
@@ -98,15 +98,15 @@ button {
 }
 
 button:hover {
-    background: linear-gradient(135deg, #003366 0%, #004080 100%);
+    background: linear-gradient(135deg, #1e3c72 0%, #163059 100%);
 }
 
 button.secondary {
-    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    background: linear-gradient(135deg, #2c5aa0 0%, #245a8f 100%);
 }
 
 button.secondary:hover {
-    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+    background: linear-gradient(135deg, #245a8f 0%, #1e4a75 100%);
 }
 
 button.danger {

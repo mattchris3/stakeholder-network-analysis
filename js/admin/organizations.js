@@ -2,11 +2,16 @@ import { allEntities, allMeetings } from './main.js';
 
 export function displayOrganizationsTable() {
     const tbody = document.getElementById('organizationsTable');
+    if (!tbody) {
+        console.error('Organizations table not found');
+        return;
+    }
+    
     tbody.innerHTML = '';
 
     const meetingCounts = {};
     allMeetings.forEach(meeting => {
-        if (meeting.participants) {
+        if (meeting.participants && Array.isArray(meeting.participants)) {
             meeting.participants.forEach(id => {
                 meetingCounts[id] = (meetingCounts[id] || 0) + 1;
             });
@@ -19,8 +24,8 @@ export function displayOrganizationsTable() {
         row.style.cursor = 'pointer';
         row.onclick = () => showOrganizationDetails(entity.id);
         row.innerHTML = `
-            <td>${entity.fullName}</td>
-            <td>${entity.sector.charAt(0).toUpperCase() + entity.sector.slice(1)}</td>
+            <td>${entity.fullName || entity.name}</td>
+            <td>${entity.sector ? entity.sector.charAt(0).toUpperCase() + entity.sector.slice(1) : 'Unknown'}</td>
             <td>${count}</td>
         `;
         tbody.appendChild(row);
@@ -29,18 +34,25 @@ export function displayOrganizationsTable() {
 
 function showOrganizationDetails(entityId) {
     const entity = allEntities.find(e => e.id === entityId);
-    if (!entity) return;
+    if (!entity) {
+        console.error('Entity not found:', entityId);
+        return;
+    }
 
     const detailContent = `
-        <h2>${entity.fullName}</h2>
+        <h2>${entity.fullName || entity.name}</h2>
         <ul>
+            <li>
+                <strong>ID:</strong>
+                ${entity.id}
+            </li>
             <li>
                 <strong>Short Name:</strong>
                 ${entity.name}
             </li>
             <li>
                 <strong>Sector:</strong>
-                ${entity.sector.charAt(0).toUpperCase() + entity.sector.slice(1)}
+                ${entity.sector ? entity.sector.charAt(0).toUpperCase() + entity.sector.slice(1) : 'Not specified'}
             </li>
             <li>
                 <strong>Description:</strong>
@@ -68,19 +80,31 @@ function showOrganizationDetails(entityId) {
             </li>
             <li>
                 <strong>Status:</strong>
-                ${entity.status || 'active'}
+                <span style="color: ${entity.status === 'active' ? 'green' : 'orange'}">
+                    ${entity.status || 'active'}
+                </span>
             </li>
         </ul>
     `;
 
-    document.getElementById('organizationDetailContent').innerHTML = detailContent;
-    document.getElementById('organizationsTableContainer').style.display = 'none';
-    document.getElementById('organizationDetail').style.display = 'block';
+    const detailEl = document.getElementById('organizationDetailContent');
+    if (detailEl) {
+        detailEl.innerHTML = detailContent;
+    }
+    
+    const tableContainer = document.getElementById('organizationsTableContainer');
+    const detailContainer = document.getElementById('organizationDetail');
+    
+    if (tableContainer) tableContainer.style.display = 'none';
+    if (detailContainer) detailContainer.style.display = 'block';
 }
 
 function backToOrganizationsTable() {
-    document.getElementById('organizationsTableContainer').style.display = 'block';
-    document.getElementById('organizationDetail').style.display = 'none';
+    const tableContainer = document.getElementById('organizationsTableContainer');
+    const detailContainer = document.getElementById('organizationDetail');
+    
+    if (tableContainer) tableContainer.style.display = 'block';
+    if (detailContainer) detailContainer.style.display = 'none';
 }
 
 window.showOrganizationDetails = showOrganizationDetails;

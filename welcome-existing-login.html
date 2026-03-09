@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -25,23 +25,25 @@
                     <input 
                         type="text" 
                         id="unityId" 
-                        placeholder="e.g., UNITY-HEALTH-2025" 
+                        placeholder="e.g., UNITY-GLOBHEALTH-2025" 
                         required
                     >
                 </div>
 
                 <div class="form-group">
-                    <label for="username">
-                        <i class="fas fa-user"></i>
-                        Username
+                    <label for="memberId">
+                        <i class="fas fa-id-card"></i>
+                        Member ID
                     </label>
                     <input 
                         type="text" 
-                        id="username" 
-                        placeholder="Your organization username" 
+                        id="memberId" 
+                        placeholder="e.g., WHO-001" 
                         required
                     >
                 </div>
+
+                <div class="error-message" id="errorMessage" style="display: none;"></div>
 
                 <button type="submit" class="submit-btn">
                     <span>Access Network</span>
@@ -61,6 +63,6 @@
         </div>
     </div>
 
-    <script type="module" src="js/existing-member-login.js"></script>
+    <script type="module" src="./js/login-member.js"></script>
 </body>
 </html>

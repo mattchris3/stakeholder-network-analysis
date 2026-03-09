@@ -1,7 +1,7 @@
 import { database } from '../config.js';
 import { ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 import { createD3Visualization } from './visualization.js';
-import { updateStatistics, updateSidebarTopEntities } from './visualization.js';
+import { updateStatistics, updateSidebarTopEntities } from './sidebar.js';
 
 export let allNodes = [];
 export let allLinks = [];
@@ -12,28 +12,35 @@ export async function loadVisualization() {
     try {
         document.querySelector('.loading').style.display = 'block';
         
+        let currentUnityId = sessionStorage.getItem('unityId');
+        if (!currentUnityId) {
+            currentUnityId = 'UNITY-GLOBHEALTH-2025';
+            sessionStorage.setItem('unityId', currentUnityId);
+        }
         
         const entitiesRef = ref(database, 'entities');
-        const entitiesData = await get(entitiesRef);
+        const entitiesSnapshot = await get(entitiesRef);
         
         const meetingsRef = ref(database, 'meetings');
-        const meetingsData = await get(meetingsRef);
+        const meetingsSnapshot = await get(meetingsRef);
 
-        if (!entitiesData.exists()) {
-            alert('No data found in database');
+        if (!entitiesSnapshot.exists()) {
+            alert('No entities found in database');
+            document.querySelector('.loading').style.display = 'none';
             return;
         }
 
-        const data = entitiesData.val();
-        const entities = Object.fromEntries(
-            Object.entries(data).filter(([key, value]) => value !== null && value !== undefined)
-        );        
-        
-        let meetings;
-        if (meetingsData.exists()) {
-            meetings = meetingsData.val();
-        } else {
-            meetings = [];
+        const allEntities = entitiesSnapshot.val();
+        const entities = Object.values(allEntities).filter(entity => 
+            entity && entity.unityId === currentUnityId && entity.status === 'active'
+        );
+
+        let meetings = [];
+        if (meetingsSnapshot.exists()) {
+            const allMeetings = meetingsSnapshot.val();
+            meetings = Object.values(allMeetings).filter(meeting => 
+                meeting && meeting.unityId === currentUnityId
+            );
         }
 
         document.querySelector('.loading').style.display = 'none';
@@ -44,54 +51,58 @@ export async function loadVisualization() {
     } catch (error) {
         alert('Error loading data: ' + error.message);
         console.error(error);
+        document.querySelector('.loading').style.display = 'none';
     }
 }
 
 function processNetworkData(entities, meetings) {
-    const entitiesArray = Array.isArray(entities) ? entities : Object.values(entities);
-    const meetingsArray = Array.isArray(meetings) ? meetings : Object.values(meetings);
-
-    const validEntityIds = new Set(entitiesArray.map(e => e.id));
+    const validEntityIds = new Set(entities.map(e => e.id));
 
     const meetingCounts = {};
     const connectionMap = {};
 
-    meetingsArray.forEach(meeting => {
-        if (meeting.participants) {
+    meetings.forEach(meeting => {
+        if (meeting.participants && Array.isArray(meeting.participants)) {
             meeting.participants.forEach(participantId => {
-                meetingCounts[participantId] = (meetingCounts[participantId] || 0) + 1;
+                if (validEntityIds.has(participantId)) {
+                    meetingCounts[participantId] = (meetingCounts[participantId] || 0) + 1;
+                }
             });
 
             for (let i = 0; i < meeting.participants.length; i++) {
                 for (let j = i + 1; j < meeting.participants.length; j++) {
                     const id1 = meeting.participants[i];
                     const id2 = meeting.participants[j];
-                    const key = id1 < id2 ? `${id1}-${id2}` : `${id2}-${id1}`;
                     
-                    if (!connectionMap[key]) {
-                        connectionMap[key] = {
-                            source: id1,
-                            target: id2,
-                            value: 0
-                        };
+                    if (validEntityIds.has(id1) && validEntityIds.has(id2)) {
+                        const key = id1 < id2 ? `${id1}-${id2}` : `${id2}-${id1}`;
+                        
+                        if (!connectionMap[key]) {
+                            connectionMap[key] = {
+                                source: id1,
+                                target: id2,
+                                value: 0
+                            };
+                        }
+                        connectionMap[key].value++;
                     }
-                    connectionMap[key].value++;
                 }
             }
         }
     });
 
-    allNodes = entitiesArray.map(entity => ({
+    allNodes = entities.map(entity => ({
         id: entity.id,
         name: entity.name || entity.shortName || `Entity ${entity.id}`,
         fullName: entity.fullName || entity.name,
         meetings: meetingCounts[entity.id] || 0,
-        sector: entity.sector || 'unknown'
+        sector: entity.sector || 'unknown',
+        status: entity.status || 'active',
+        description: entity.description || '',
+        duty: entity.duty || ''
     }));
 
-    allLinks = Object.values(connectionMap).filter(link => 
-        validEntityIds.has(link.source) && validEntityIds.has(link.target)
-    );
+    allLinks = Object.values(connectionMap);
 
     updateStatistics();
     updateSidebarTopEntities();
@@ -125,7 +136,7 @@ export function applyFilters() {
     const nodeIds = new Set(currentNodes.map(node => node.id));
 
     currentLinks = allLinks.filter(link => 
-        nodeIds.has(link.source.id || link.source) && 
+        nodeIds.has(link.source.id || link.source) &&
         nodeIds.has(link.target.id || link.target)
     );
 

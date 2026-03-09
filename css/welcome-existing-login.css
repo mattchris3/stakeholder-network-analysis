@@ -91,6 +91,16 @@ body {
     color: #999;
 }
 
+.error-message {
+    background: #fee;
+    border: 2px solid #fcc;
+    color: #c33;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
 .submit-btn {
     width: 100%;
     padding: 16px;

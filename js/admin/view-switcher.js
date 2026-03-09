@@ -20,19 +20,19 @@ function switchView(view) {
     const orgSection = document.querySelector('.organizations-section');
     const meetSection = document.querySelector('.meetings-section');
     
-    chartSection.style.display = 'none';
-    if(orgSection) orgSection.style.display = 'none';
-    if(meetSection) meetSection.style.display = 'none';
+    if (chartSection) chartSection.style.display = 'none';
+    if (orgSection) orgSection.style.display = 'none';
+    if (meetSection) meetSection.style.display = 'none';
     
     if (view === 'overview') {
-        chartSection.style.display = 'block';
+        if (chartSection) chartSection.style.display = 'block';
     } else if (view === 'organizations') {
-        if(orgSection) {
+        if (orgSection) {
             orgSection.style.display = 'block';
             displayOrganizationsTable();
         }
     } else if (view === 'meetings') {
-        if(meetSection) {
+        if (meetSection) {
             meetSection.style.display = 'block';
             displayMeetingsTableView();
         }

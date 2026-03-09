@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%232c5aa0'/></svg>">
+    
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="css/network/main.css">
+    <link rel="stylesheet" href="css/network/navbar.css">
+    <link rel="stylesheet" href="css/network/controls.css">
+    <link rel="stylesheet" href="css/network/visualization.css">
+    <link rel="stylesheet" href="css/network/sidebar.css">
+    <link rel="stylesheet" href="css/network/legend.css">
+    
+    <link rel="stylesheet" href="css/admin/main.css">
+    <link rel="stylesheet" href="css/admin/components.css">
+    <link rel="stylesheet" href="css/admin/table.css">
+    <link rel="stylesheet" href="css/admin/modify-section.css">
+    <link rel="stylesheet" href="css/admin/admin-modify.css">
+</head>
+<body>
+    <div class="navbar">
+        <h1><i class="fas fa-network-wired"></i> Organization Network</h1>
+        <div class="navbar-menu">
+            <a href="#" class="active" onclick="showNetworkView()">
+                <i class="fas fa-home"></i> Network
+            </a>
+            <a href="#" id="adminTabNav" style="display: none;" onclick="showAdminView()">
+                <i class="fas fa-user-shield"></i> Admin
+            </a>
+            <div class="user-info" id="userInfoDisplay" style="display: none;">
+                <i class="fas fa-building"></i>
+                <span id="userDisplayName">User</span>
+            </div>
+            <a href="index.html">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <div id="networkView" class="container">
+        <div class="main-content">
+            <div class="stats-container">
+                <div class="stat-card blue">
+                    <i class="fas fa-building"></i>
+                    <div class="stat-value" id="entityCount">0</div>
+                    <div class="stat-label">Organizations</div>
+                </div>
+                <div class="stat-card green">
+                    <i class="fas fa-link"></i>
+                    <div class="stat-value" id="connectionCount">0</div>
+                    <div class="stat-label">Connections</div>
+                </div>
+                <div class="stat-card orange">
+                    <i class="fas fa-calendar"></i>
+                    <div class="stat-value" id="meetingCount">0</div>
+                    <div class="stat-label">Total Meetings</div>
+                </div>
+                <div class="stat-card purple">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="stat-value" id="avgConnections">0</div>
+                    <div class="stat-label">Avg. Connections</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="controls-header">
+                    <h3><i class="fas fa-sliders-h"></i> Controls & Filters</h3>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search organizations...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="controls-row">
+                    <div class="control-group">
+                        <label>View Mode</label>
+                        <select id="viewMode">
+                            <option value="all">All Entities</option>
+                            <option value="active">Active Only (5+ meetings)</option>
+                            <option value="top">Top 10 Collaborators</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Filter by Sector</label>
+                        <select id="filterSector">
+                            <option value="all">All Sectors</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="education">Education</option>
+                            <option value="government">Government</option>
+                            <option value="nonprofit">Non-Profit</option>
+                            <option value="business">Business</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Connection Strength</label>
+                        <select id="connectionStrength">
+                            <option value="all">All Connections</option>
+                            <option value="strong">Strong (3+ meetings)</option>
+                            <option value="medium">Medium (2 meetings)</option>
+                            <option value="weak">Weak (1 meeting)</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button class="secondary" onclick="loadVisualization()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button onclick="resetZoom()">
+                            <i class="fas fa-search-location"></i> Reset Zoom
+                        </button>
+                        <button class="danger" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="network">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading network data...</p>
+                </div>
+                <div class="network-legend">
+                    <h4>Link Strength</h4>
+                    <div class="legend-item">
+                        <span class="legend-line legend-strong"></span>
+                        <span>Strong (6+ meetings)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-line legend-medium"></span>
+                        <span>Medium (3-5 meetings)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-line legend-weak"></span>
+                        <span>Weak (1-2 meetings)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tooltip" id="tooltip"></div>
+        </div>
+
+        <div class="sidebar">
+            <div class="sidebar-tabs">
+                <button class="tab-btn active" onclick="switchTab('overview')">
+                    <i class="fas fa-chart-pie"></i> Overview
+                </button>
+                <button class="tab-btn" onclick="switchTab('details')">
+                    <i class="fas fa-info-circle"></i> Details
+                </button>
+            </div>
+            
+            <div id="overview-tab" class="tab-content active">
+                <h3>Top Active Organizations</h3>
+                <ul class="entity-list" id="topEntities"></ul>
+            </div>
+            
+            <div id="details-tab" class="tab-content">
+                <h3>Entity Details</h3>
+                <p style="color: #999; text-align: center; padding: 20px;">
+                    <i class="fas fa-mouse-pointer"></i><br>
+                    Click on an entity to see details
+                </p>
+                <div id="entityDetails" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminView" class="admin-container" style="display: none;">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-user-shield"></i>
+                <h2>Admin Panel</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="admin-overview">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="admin-modify">
+                    <i class="fas fa-edit"></i>
+                    <span>Modify Data</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="admin-pending">
+                    <i class="fas fa-user-clock"></i>
+                    <span>Pending Approvals</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="admin-settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <h1 id="pageTitle">Overview</h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="adminUsername">Admin</span>
+                </div>
+            </div>
+
+            <div class="tab-content active" id="admin-overview-content">
+                <div class="button-grid">
+                    <button class="view-btn active" data-view="overview">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Overview</span>
+                    </button>
+                    <button class="view-btn" data-view="organizations">
+                        <i class="fas fa-building"></i>
+                        <span>Organizations</span>
+                    </button>
+                    <button class="view-btn" data-view="meetings">
+                        <i class="fas fa-calendar"></i>
+                        <span>Meetings</span>
+                    </button>
+                </div>
+
+                <div class="chart-section">
+                    <h3>Organizations by Sector</h3>
+                    <div class="chart-container">
+                        <canvas id="sectorChart"></canvas>
+                        <div class="sector-list" id="sectorList"></div>
+                    </div>
+                </div>
+
+                <div class="organizations-section" style="display: none;">
+                    <div id="organizationsTableContainer">
+                        <h3>Organizations</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Organization</th>
+                                    <th>Sector</th>
+                                    <th>Meetings</th>
+                                </tr>
+                            </thead>
+                            <tbody id="organizationsTable"></tbody>
+                        </table>
+                    </div>
+                    <div id="organizationDetail" style="display: none;">
+                        <button onclick="backToOrganizationsTable()" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <div id="organizationDetailContent"></div>
+                    </div>
+                </div>
+
+                <div class="meetings-section" style="display: none;">
+                    <div id="meetingsTableContainer">
+                        <h3>Meetings</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Date</th>
+                                    <th>Organizations</th>
+                                </tr>
+                            </thead>
+                            <tbody id="meetingsTableView"></tbody>
+                        </table>
+                    </div>
+                    <div id="meetingDetail" style="display: none;">
+                        <button onclick="backToMeetingsTable()" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <div id="meetingDetailContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="admin-modify-content">
+                <div id="modifyTablesView">
+                    <div class="admin-modify-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Manage Members</h3>
+                            <button class="btn btn-primary" onclick="showAddEntityForm()">
+                                <i class="fas fa-plus"></i> Add Member
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Full Name</th>
+                                        <th>Sector</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modifyEntitiesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="admin-modify-section" style="margin-top: 40px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Manage Meetings</h3>
+                            <button class="btn btn-primary" onclick="showAddMeetingForm()">
+                                <i class="fas fa-plus"></i> Add Meeting
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Participants</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modifyMeetingsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="addEntityFormView" style="display: none;">
+                    <button class="btn btn-secondary" onclick="backToModifyTables()">
+                        <i class="fas fa-arrow-left"></i> Back to Tables
+                    </button>
+                    
+                    <div class="form-container">
+                        <h3>Add New Member</h3>
+                        <form id="addEntityForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Short Name *</label>
+                                    <input type="text" id="entityName" required placeholder="e.g., WHO">
+                                </div>
+                                <div class="form-group">
+                                    <label>Full Name *</label>
+                                    <input type="text" id="entityFullName" required placeholder="e.g., World Health Organization">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Sector *</label>
+                                    <select id="entitySector" required>
+                                        <option value="">Select Sector</option>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="education">Education</option>
+                                        <option value="government">Government</option>
+                                        <option value="nonprofit">Non-Profit</option>
+                                        <option value="business">Business</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status *</label>
+                                    <select id="entityStatus" required>
+                                        <option value="active">Active</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="entityDescription" rows="3" placeholder="Brief description of the organization"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Primary Duty</label>
+                                <textarea id="entityDuty" rows="2" placeholder="Main responsibilities"></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Funding Source</label>
+                                    <input type="text" id="entityFunding" placeholder="e.g., Government grants">
+                                </div>
+                                <div class="form-group">
+                                    <label>Annual Budget (USD)</label>
+                                    <input type="number" id="entityBudget" placeholder="e.g., 1000000">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Founded Year</label>
+                                    <input type="number" id="entityFounded" placeholder="e.g., 1948">
+                                </div>
+                                <div class="form-group">
+                                    <label>Location</label>
+                                    <input type="text" id="entityLocation" placeholder="e.g., Geneva, Switzerland">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
+                                <i class="fas fa-save"></i> Add Member
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="editEntityFormView" style="display: none;">
+                    <button class="btn btn-secondary" onclick="backToModifyTables()">
+                        <i class="fas fa-arrow-left"></i> Back to Tables
+                    </button>
+                    
+                    <div class="form-container">
+                        <h3>Edit Member</h3>
+                        <form id="editEntityForm">
+                            <input type="hidden" id="editEntityId">
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Short Name *</label>
+                                    <input type="text" id="editEntityName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Full Name *</label>
+                                    <input type="text" id="editEntityFullName" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Sector *</label>
+                                    <select id="editEntitySector" required>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="education">Education</option>
+                                        <option value="government">Government</option>
+                                        <option value="nonprofit">Non-Profit</option>
+                                        <option value="business">Business</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status *</label>
+                                    <select id="editEntityStatus" required>
+                                        <option value="active">Active</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="editEntityDescription" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Primary Duty</label>
+                                <textarea id="editEntityDuty" rows="2"></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Funding Source</label>
+                                    <input type="text" id="editEntityFunding">
+                                </div>
+                                <div class="form-group">
+                                    <label>Annual Budget (USD)</label>
+                                    <input type="number" id="editEntityBudget">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Founded Year</label>
+                                    <input type="number" id="editEntityFounded">
+                                </div>
+                                <div class="form-group">
+                                    <label>Location</label>
+                                    <input type="text" id="editEntityLocation">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
+                                <i class="fas fa-save"></i> Update Member
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="admin-pending-content">
+                <h3>Pending Approvals</h3>
+                <p>Review and approve new members coming soon...</p>
+            </div>
+
+            <div class="tab-content" id="admin-settings-content">
+                <div class="settings-section">
+                    <h3>Change Password</h3>
+                    <form id="passwordForm" class="settings-form">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="newPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="js/network/main.js"></script>
+    <script type="module" src="js/admin/main.js"></script>
+    
+    <script>
+        function showNetworkView() {
+            document.getElementById('networkView').style.display = 'flex';
+            document.getElementById('adminView').style.display = 'none';
+            document.querySelector('.navbar-menu a[onclick="showNetworkView()"]').classList.add('active');
+            const adminNav = document.querySelector('.navbar-menu a[onclick="showAdminView()"]');
+            if (adminNav) adminNav.classList.remove('active');
+
+            sessionStorage.setItem('currentView', 'network');
+        }
+
+        function showAdminView() {
+            document.getElementById('networkView').style.display = 'none';
+            document.getElementById('adminView').style.display = 'flex';
+            document.querySelector('.navbar-menu a[onclick="showNetworkView()"]').classList.remove('active');
+            document.querySelector('.navbar-menu a[onclick="showAdminView()"]').classList.add('active');
+
+            sessionStorage.setItem('currentView', 'admin')
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const unityId = sessionStorage.getItem('unityId');
+            const userRole = sessionStorage.getItem('userRole');
+            
+            if (!unityId) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            if (userRole === 'admin') {
+                const adminNav = document.getElementById('adminTabNav');
+                if (adminNav) adminNav.style.display = 'flex';
+                
+                const username = sessionStorage.getItem('username');
+                if (username) {
+                    document.getElementById('adminUsername').textContent = username;
+                }
+            } else if (userRole === 'member') {
+                const userInfo = document.getElementById('userInfoDisplay');
+                if (userInfo) userInfo.style.display = 'flex';
+                
+                const orgName = sessionStorage.getItem('orgName');
+                if (orgName) {
+                    document.getElementById('userDisplayName').textContent = orgName;
+                }
+            }
+            
+            const currentView = sessionStorage.getItem('currentView');
+            if(currentView === 'admin' && userRole === 'admin'){
+                showAdminView();
+            }
+            else {
+                showNetworkView();
+            }
+        });
+    </script>
+</body>
+</html>

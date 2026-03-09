@@ -7,18 +7,16 @@ import { displayModifyTables } from './modify.js';
 export let allEntities = [];
 export let allMeetings = [];
 
-if (!sessionStorage.getItem('adminAuthenticated')) {
-    window.location.href = 'login.html';
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    loadData();
-    setupNavigation();
-    setupViewButtons();
+    if (document.getElementById('adminView')) {
+        setupNavigation();
+        setupViewButtons();
+        loadAdminData();
+    }
 });
 
 function setupNavigation() {
-    const navItems = document.querySelectorAll('.nav-item');
+    const navItems = document.querySelectorAll('#adminView .nav-item');
     
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
@@ -28,54 +26,69 @@ function setupNavigation() {
             item.classList.add('active');
             
             const tabName = item.getAttribute('data-tab');
-            switchTab(tabName);
+            switchAdminTab(tabName);
         });
     });
 }
 
-function switchTab(tabName) {
-    const tabs = document.querySelectorAll('.tab-content');
+function switchAdminTab(tabName) {
+    const tabs = document.querySelectorAll('#adminView .tab-content');
     tabs.forEach(tab => tab.classList.remove('active'));
     
-    document.getElementById(`${tabName}-content`).classList.add('active');
+    const targetTab = document.getElementById(`${tabName}-content`);
+    if (targetTab) {
+        targetTab.classList.add('active');
+    }
     
     const titles = {
-        overview: 'Overview',
-        modify: 'Modify Data',
-        settings: 'Admin Settings'
+        'admin-overview': 'Overview',
+        'admin-modify': 'Modify Data',
+        'admin-pending': 'Pending Approvals',
+        'admin-settings': 'Settings'
     };
 
-    document.getElementById('pageTitle').textContent = titles[tabName];
+    const pageTitleEl = document.getElementById('pageTitle');
+    if (pageTitleEl) {
+        pageTitleEl.textContent = titles[tabName] || 'Admin Panel';
+    }
 
-    if (tabName === 'overview') {
-        loadData();
-    } else if (tabName === 'modify') {
-        loadData().then(() => {
-            displayModifyTables();
-        });
+    if (tabName === 'admin-overview') {
+        loadAdminData();
+    } else if (tabName === 'admin-modify') {
+        displayModifyTables();
     }
 }
 
-async function loadData() {
+async function loadAdminData() {
     try {
+        const currentUnityId = sessionStorage.getItem('unityId');
+        if (!currentUnityId) {
+            console.error('No unity ID found');
+            return;
+        }
+
         const entitiesRef = ref(database, 'entities');
         const entitiesData = await get(entitiesRef);
         
         const meetingsRef = ref(database, 'meetings');
         const meetingsData = await get(meetingsRef);
 
+        allEntities = [];
+        allMeetings = [];
+
         if (entitiesData.exists()) {
-            allEntities = Object.values(entitiesData.val());
+            const all = entitiesData.val();
+            allEntities = Object.values(all).filter(e => e && e.unityId === currentUnityId);
         }
 
         if (meetingsData.exists()) {
-            allMeetings = Object.values(meetingsData.val());
+            const all = meetingsData.val();
+            allMeetings = Object.values(all).filter(m => m && m.unityId === currentUnityId);
         }
 
-        displayOverview();
+        await displayOverview();
         
     } catch (error) {
-        console.error('Error loading data:', error);
-        alert('Error loading data from Firebase');
+        console.error('Error loading admin data:', error);
     }
 }

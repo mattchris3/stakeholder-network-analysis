@@ -7,19 +7,22 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #f5f5f5;
+    overflow-x: hidden;
 }
 
 .admin-container {
     display: flex;
-    height: 100vh;
+    height: calc(100vh - 60px);
+    width: 100%;
 }
 
-.sidebar {
+.admin-container .sidebar {
     width: 250px;
-    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+    background: linear-gradient(180deg, #1e3c72 0%, #2c5aa0 100%);
     color: white;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
 }
 
 .sidebar-header {
@@ -50,6 +53,7 @@ body {
     color: rgba(255,255,255,0.7);
     text-decoration: none;
     transition: all 0.3s;
+    border-left: 4px solid transparent;
 }
 
 .nav-item:hover {
@@ -60,7 +64,7 @@ body {
 .nav-item.active {
     background: rgba(255,255,255,0.15);
     color: white;
-    border-left: 4px solid #3498db;
+    border-left: 4px solid #ffffff;
 }
 
 .nav-item i {
@@ -93,10 +97,11 @@ body {
     margin-right: 10px;
 }
 
-.main-content {
+.admin-container .main-content {
     flex: 1;
     overflow-y: auto;
     background: #f5f5f5;
+    width: 100%;
 }
 
 .content-header {
@@ -106,29 +111,53 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .content-header h1 {
     font-size: 28px;
-    color: #333;
+    color: #1e3c72;
+    font-weight: 600;
 }
 
-.user-info {
+.content-header .user-info {
     display: flex;
     align-items: center;
     gap: 10px;
     color: #666;
 }
 
-.user-info i {
+.content-header .user-info i {
     font-size: 24px;
+    color: #2c5aa0;
 }
 
-.tab-content {
+.admin-container .tab-content {
     display: none;
     padding: 30px;
+    animation: fadeIn 0.3s;
 }
 
-.tab-content.active {
+.admin-container .tab-content.active {
     display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#admin-overview-content > div,
+#admin-modify-content > div,
+#admin-pending-content > div,
+#admin-settings-content > div {
+    max-width: 1200px;
 }

@@ -8,7 +8,6 @@
     backdrop-filter: blur(10px);
 }
 
-/* D3 Node Styles */
 .node {
     cursor: grab;
     stroke: #fff;
@@ -17,7 +16,7 @@
 }
 
 .node:hover {
-    stroke: #ff9800;
+    stroke: #2c5aa0;
     stroke-width: 4px;
 }
 
@@ -26,23 +25,21 @@
 }
 
 .node.highlighted {
-    stroke: #4CAF50;
+    stroke: #2c5aa0;
     stroke-width: 5px;
 }
 
-/* D3 Link Styles */
 .link {
     stroke: #999;
     stroke-opacity: 0.4;
 }
 
 .link.highlighted {
-    stroke: #ff9800;
+    stroke: #2c5aa0;
     stroke-opacity: 0.8;
     stroke-width: 3px;
 }
 
-/* Node Labels */
 .node-label {
     font-size: 12px;
     font-weight: 600;
@@ -52,11 +49,10 @@
     text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
 }
 
-/* Tooltip */
 .tooltip {
     position: absolute;
     padding: 15px;
-    background: linear-gradient(135deg, rgba(0,31,63,0.95) 0%, rgba(0,51,102,0.95) 100%);
+    background: linear-gradient(135deg, rgba(30, 60, 114, 0.95) 0%, rgba(44, 90, 160, 0.95) 100%);
     color: white;
     border-radius: 8px;
     pointer-events: none;
