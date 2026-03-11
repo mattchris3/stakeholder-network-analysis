@@ -67,10 +67,12 @@ export function createD3Visualization(nodes, links) {
     });
 
     simulation = d3.forceSimulation(nodes)
-        .force('link', d3.forceLink(links).id(d => d.id).distance(150))
-        .force('charge', d3.forceManyBody().strength(-800))
+        .force('link', d3.forceLink(links).id(d => d.id).distance(250))
+        .force('charge', d3.forceManyBody().strength(-1200))
         .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius(d => Math.sqrt(d.meetings) * 5 + 30));
+        .force('collision', d3.forceCollide().radius(d => Math.sqrt(d.meetings) * 5 + 40))
+        .force('x', d3.forceX(width / 2).strength(0.08))
+        .force('y', d3.forceY(height / 2).strength(0.08));
 
     const link = g.append('g')
         .selectAll('line')
@@ -80,23 +82,7 @@ export function createD3Visualization(nodes, links) {
             if (d.value >= 6) return 'link link-strong';
             if (d.value >= 3) return 'link link-medium';
             return 'link link-weak';
-        })
-        .attr('stroke-width', d => {
-            if (d.value >= 6) return 4;
-            if (d.value >= 3) return 2.5;
-            return 1.5;
-        })
-        .attr('stroke', d => {
-            if (d.value >= 6) return '#000000';
-            if (d.value >= 3) return '#4CAF50';
-            return '#f44336';
-        })
-        .attr('stroke-opacity', d => {
-            if (d.value >= 6) return 0.8;
-            if (d.value >= 3) return 0.7;
-            return 0.6;
-        })
-        .attr('stroke-dasharray', d => d.value < 3 ? '5,5' : '0');
+        });
 
     const node = g.append('g')
         .selectAll('circle')
@@ -105,6 +91,7 @@ export function createD3Visualization(nodes, links) {
         .attr('class', 'node')
         .attr('r', d => Math.sqrt(d.meetings) * 5 + 15)
         .attr('fill', d => getSectorColor(d.sector))
+        .attr('opacity', d => d.meetings === 0 ? 0.5 : 1)
         .call(drag(simulation));
 
     const label = g.append('g')

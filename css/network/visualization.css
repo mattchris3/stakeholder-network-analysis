@@ -30,14 +30,40 @@
 }
 
 .link {
-    stroke: #999;
-    stroke-opacity: 0.4;
+    fill: none;
+    stroke: #999999;
+    stroke-opacity: 0.3;
+    transition: all 0.3s ease;
 }
 
-.link.highlighted {
-    stroke: #2c5aa0;
-    stroke-opacity: 0.8;
+.link-strong {
+    stroke-width: 5px;
+}
+
+.link-medium {
     stroke-width: 3px;
+}
+
+.link-weak {
+    stroke-width: 1.5px;
+}
+
+.link-strong.highlighted {
+    stroke: #000000 !important;
+    stroke-width: 7px !important;
+    stroke-opacity: 0.9 !important;
+}
+
+.link-medium.highlighted {
+    stroke: #4CAF50 !important;
+    stroke-width: 5px !important;
+    stroke-opacity: 0.8 !important;
+}
+
+.link-weak.highlighted {
+    stroke: #f44336 !important;
+    stroke-width: 3px !important;
+    stroke-opacity: 0.7 !important;
 }
 
 .node-label {

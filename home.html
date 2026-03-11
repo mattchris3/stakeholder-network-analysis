@@ -105,6 +105,14 @@
                             <option value="weak">Weak (1 meeting)</option>
                         </select>
                     </div>
+
+                    <div class="control-group">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="showIsolatedNodes" checked>
+                            <span>Show unconnected members</span>
+                        </label>
+                    </div>
+
                     <div class="button-group">
                         <button class="secondary" onclick="loadVisualization()">
                             <i class="fas fa-sync-alt"></i> Refresh
@@ -187,7 +195,7 @@
                     <span>Modify Data</span>
                 </a>
                 <a href="#" class="nav-item" data-tab="admin-pending">
-                    <i class="fas fa-user-clock"></i>
+                    <i class="fas fa-clock"></i>
                     <span>Pending Approvals</span>
                 </a>
                 <a href="#" class="nav-item" data-tab="admin-settings">
@@ -487,8 +495,36 @@
             </div>
 
             <div class="tab-content" id="admin-pending-content">
-                <h3>Pending Approvals</h3>
-                <p>Review and approve new members coming soon...</p>
+                <div class="pending-stats">
+                    <div class="stat-card orange">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-value" id="pendingCount">0</div>
+                        <div class="stat-label">Pending Applications</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <h3>Pending Member Applications</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Applied Date</th>
+                                <th>Organization</th>
+                                <th>Sector</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingApplicationsTable">
+
+                        </tbody>
+                    </table>
+
+                    <div id="noPendingMessage" style="display: none; text-align: center; padding: 40px; color: #999;">
+                        <i class="fas fa-check-circle" style="font-size: 48px; color: #4CAF50; margin-bottom: 20px;"></i>
+                        <p style="font-size: 18px;">No Pending Applications</p>
+                    </div>
+                </div>
             </div>
 
             <div class="tab-content" id="admin-settings-content">

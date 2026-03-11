@@ -148,6 +148,18 @@ export function applyFilters() {
         currentLinks = currentLinks.filter(link => link.value === 1);
     }
 
+    const showIsolated = document.getElementById('showIsolatedNodes')?.checked !== false;
+    if (!showIsolated) {
+        const connectedIds = new Set();
+        currentLinks.forEach(link => {
+            connectedIds.add(link.source.id || link.source);
+            connectedIds.add(link.target.id || link.target);
+        });
+        
+        currentNodes = currentNodes.filter(node => connectedIds.has(node.id));
+    }
+    
+    updateStatistics(currentNodes, currentLinks);
     createD3Visualization(currentNodes, currentLinks);
 }
 
