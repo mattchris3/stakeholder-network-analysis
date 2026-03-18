@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="css/admin/components.css">
     <link rel="stylesheet" href="css/admin/table.css">
     <link rel="stylesheet" href="css/admin/modify-section.css">
-    <link rel="stylesheet" href="css/admin/admin-modify.css">
+    <link rel="stylesheet" href="css/admin/pending-section.css">
 </head>
 <body>
     <div class="navbar">
@@ -105,14 +105,13 @@
                             <option value="weak">Weak (1 meeting)</option>
                         </select>
                     </div>
-
                     <div class="control-group">
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <label>Show Unconnected</label>
+                        <label class="switch">
                             <input type="checkbox" id="showIsolatedNodes" checked>
-                            <span>Show unconnected members</span>
+                            <span class="slider"></span>
                         </label>
                     </div>
-
                     <div class="button-group">
                         <button class="secondary" onclick="loadVisualization()">
                             <i class="fas fa-sync-alt"></i> Refresh
@@ -127,53 +126,55 @@
                 </div>
             </div>
 
-            <div id="network">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Loading network data...</p>
+            <div class="network-row">
+                <div id="network">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading network data...</p>
+                    </div>
+                    <div class="network-legend">
+                        <h4>Link Strength</h4>
+                        <div class="legend-item">
+                            <span class="legend-line legend-strong"></span>
+                            <span>Strong (6+ meetings)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line legend-medium"></span>
+                            <span>Medium (3-5 meetings)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line legend-weak"></span>
+                            <span>Weak (1-2 meetings)</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="network-legend">
-                    <h4>Link Strength</h4>
-                    <div class="legend-item">
-                        <span class="legend-line legend-strong"></span>
-                        <span>Strong (6+ meetings)</span>
+
+                <div class="tooltip" id="tooltip"></div>
+
+                <div class="sidebar">
+                    <div class="sidebar-tabs">
+                        <button class="tab-btn active" onclick="switchTab('overview')">
+                            <i class="fas fa-chart-pie"></i> Overview
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('details')">
+                            <i class="fas fa-info-circle"></i> Details
+                        </button>
                     </div>
-                    <div class="legend-item">
-                        <span class="legend-line legend-medium"></span>
-                        <span>Medium (3-5 meetings)</span>
+
+                    <div id="overview-tab" class="tab-content active">
+                        <h3>Top Active Organizations</h3>
+                        <ul class="entity-list" id="topEntities"></ul>
                     </div>
-                    <div class="legend-item">
-                        <span class="legend-line legend-weak"></span>
-                        <span>Weak (1-2 meetings)</span>
+
+                    <div id="details-tab" class="tab-content">
+                        <h3>Entity Details</h3>
+                        <p style="color: #5a6478; text-align: center; padding: 20px;">
+                            <i class="fas fa-mouse-pointer"></i><br>
+                            Click on an entity to see details
+                        </p>
+                        <div id="entityDetails" style="display: none;"></div>
                     </div>
                 </div>
-            </div>
-
-            <div class="tooltip" id="tooltip"></div>
-        </div>
-
-        <div class="sidebar">
-            <div class="sidebar-tabs">
-                <button class="tab-btn active" onclick="switchTab('overview')">
-                    <i class="fas fa-chart-pie"></i> Overview
-                </button>
-                <button class="tab-btn" onclick="switchTab('details')">
-                    <i class="fas fa-info-circle"></i> Details
-                </button>
-            </div>
-            
-            <div id="overview-tab" class="tab-content active">
-                <h3>Top Active Organizations</h3>
-                <ul class="entity-list" id="topEntities"></ul>
-            </div>
-            
-            <div id="details-tab" class="tab-content">
-                <h3>Entity Details</h3>
-                <p style="color: #999; text-align: center; padding: 20px;">
-                    <i class="fas fa-mouse-pointer"></i><br>
-                    Click on an entity to see details
-                </p>
-                <div id="entityDetails" style="display: none;"></div>
             </div>
         </div>
     </div>
@@ -191,12 +192,12 @@
                     <span>Overview</span>
                 </a>
                 <a href="#" class="nav-item" data-tab="admin-modify">
-                    <i class="fas fa-edit"></i>
-                    <span>Modify Data</span>
+                    <i class="fas fa-users"></i>
+                    <span>Members</span>
                 </a>
                 <a href="#" class="nav-item" data-tab="admin-pending">
                     <i class="fas fa-clock"></i>
-                    <span>Pending Approvals</span>
+                    <span>Approvals</span>
                 </a>
                 <a href="#" class="nav-item" data-tab="admin-settings">
                     <i class="fas fa-cog"></i>
@@ -246,6 +247,7 @@
                                 <tr>
                                     <th>Organization</th>
                                     <th>Sector</th>
+                                    <th>Status</th>
                                     <th>Meetings</th>
                                 </tr>
                             </thead>
@@ -286,12 +288,7 @@
             <div class="tab-content" id="admin-modify-content">
                 <div id="modifyTablesView">
                     <div class="admin-modify-section">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3>Manage Members</h3>
-                            <button class="btn btn-primary" onclick="showAddEntityForm()">
-                                <i class="fas fa-plus"></i> Add Member
-                            </button>
-                        </div>
+                        <h3>Members</h3>
                         <div class="table-container">
                             <table class="data-table">
                                 <thead>
@@ -300,229 +297,97 @@
                                         <th>Name</th>
                                         <th>Full Name</th>
                                         <th>Sector</th>
-                                        <th>Actions</th>
+                                        <th>Status</th>                                        
+                                        <th>Location</th>
+                                        <th>Details</th>
                                     </tr>
                                 </thead>
                                 <tbody id="modifyEntitiesTable"></tbody>
                             </table>
                         </div>
                     </div>
-
-                    <div class="admin-modify-section" style="margin-top: 40px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3>Manage Meetings</h3>
-                            <button class="btn btn-primary" onclick="showAddMeetingForm()">
-                                <i class="fas fa-plus"></i> Add Meeting
-                            </button>
-                        </div>
-                        <div class="table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Title</th>
-                                        <th>Date</th>
-                                        <th>Participants</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="modifyMeetingsTable"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="addEntityFormView" style="display: none;">
-                    <button class="btn btn-secondary" onclick="backToModifyTables()">
-                        <i class="fas fa-arrow-left"></i> Back to Tables
-                    </button>
-                    
-                    <div class="form-container">
-                        <h3>Add New Member</h3>
-                        <form id="addEntityForm">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Short Name *</label>
-                                    <input type="text" id="entityName" required placeholder="e.g., WHO">
-                                </div>
-                                <div class="form-group">
-                                    <label>Full Name *</label>
-                                    <input type="text" id="entityFullName" required placeholder="e.g., World Health Organization">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Sector *</label>
-                                    <select id="entitySector" required>
-                                        <option value="">Select Sector</option>
-                                        <option value="healthcare">Healthcare</option>
-                                        <option value="education">Education</option>
-                                        <option value="government">Government</option>
-                                        <option value="nonprofit">Non-Profit</option>
-                                        <option value="business">Business</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Status *</label>
-                                    <select id="entityStatus" required>
-                                        <option value="active">Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="inactive">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea id="entityDescription" rows="3" placeholder="Brief description of the organization"></textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Primary Duty</label>
-                                <textarea id="entityDuty" rows="2" placeholder="Main responsibilities"></textarea>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Funding Source</label>
-                                    <input type="text" id="entityFunding" placeholder="e.g., Government grants">
-                                </div>
-                                <div class="form-group">
-                                    <label>Annual Budget (USD)</label>
-                                    <input type="number" id="entityBudget" placeholder="e.g., 1000000">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Founded Year</label>
-                                    <input type="number" id="entityFounded" placeholder="e.g., 1948">
-                                </div>
-                                <div class="form-group">
-                                    <label>Location</label>
-                                    <input type="text" id="entityLocation" placeholder="e.g., Geneva, Switzerland">
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
-                                <i class="fas fa-save"></i> Add Member
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <div id="editEntityFormView" style="display: none;">
-                    <button class="btn btn-secondary" onclick="backToModifyTables()">
-                        <i class="fas fa-arrow-left"></i> Back to Tables
-                    </button>
-                    
-                    <div class="form-container">
-                        <h3>Edit Member</h3>
-                        <form id="editEntityForm">
-                            <input type="hidden" id="editEntityId">
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Short Name *</label>
-                                    <input type="text" id="editEntityName" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Full Name *</label>
-                                    <input type="text" id="editEntityFullName" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Sector *</label>
-                                    <select id="editEntitySector" required>
-                                        <option value="healthcare">Healthcare</option>
-                                        <option value="education">Education</option>
-                                        <option value="government">Government</option>
-                                        <option value="nonprofit">Non-Profit</option>
-                                        <option value="business">Business</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Status *</label>
-                                    <select id="editEntityStatus" required>
-                                        <option value="active">Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="inactive">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea id="editEntityDescription" rows="3"></textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Primary Duty</label>
-                                <textarea id="editEntityDuty" rows="2"></textarea>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Funding Source</label>
-                                    <input type="text" id="editEntityFunding">
-                                </div>
-                                <div class="form-group">
-                                    <label>Annual Budget (USD)</label>
-                                    <input type="number" id="editEntityBudget">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Founded Year</label>
-                                    <input type="number" id="editEntityFounded">
-                                </div>
-                                <div class="form-group">
-                                    <label>Location</label>
-                                    <input type="text" id="editEntityLocation">
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
-                                <i class="fas fa-save"></i> Update Member
-                            </button>
-                        </form>
-                    </div>
                 </div>
             </div>
 
-            <div class="tab-content" id="admin-pending-content">
-                <div class="pending-stats">
-                    <div class="stat-card orange">
-                        <i class="fas fa-clock"></i>
-                        <div class="stat-value" id="pendingCount">0</div>
-                        <div class="stat-label">Pending Applications</div>
+            <div id="admin-pending-content" class="tab-content">
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" onclick="switchPendingView('pending')">
+                        <i class="fas fa-clock"></i> Pending
+                        <span id="pendingCount">0</span>
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchPendingView('approved')">
+                        <i class="fas fa-check-circle"></i> Approved
+                        <span id="approvedCount">0</span>
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchPendingView('rejected')">
+                        <i class="fas fa-times-circle"></i> Rejected
+                        <span id="rejectedCount">0</span>
+                    </button>
+                </div>
+
+                <div id="pendingView" class="sub-tab-content active">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Applied Date</th>
+                                    <th>Organization</th>
+                                    <th>Sector</th>
+                                    <th>Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingApplicationsTable"></tbody>
+                        </table>
+                        
+                        <div id="noPendingMessage" style="display: none; text-align: center; padding: 40px; color: #5a6478;">
+                            <i class="fas fa-check-circle" style="font-size: 48px; color: #5a7a6b; margin-bottom: 20px;"></i>
+                            <p style="font-size: 16px;">No pending applications</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="table-container">
-                    <h3>Pending Member Applications</h3>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Applied Date</th>
-                                <th>Organization</th>
-                                <th>Sector</th>
-                                <th>Location</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pendingApplicationsTable">
+                <div id="approvedView" class="sub-tab-content">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Approved Date</th>
+                                    <th>Organization</th>
+                                    <th>Sector</th>
+                                    <th>Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="approvedApplicationsTable"></tbody>
+                        </table>
+                        
+                        <div id="noApprovedMessage" style="display: none; text-align: center; padding: 40px; color: #5a6478;">
+                            <i class="fas fa-inbox" style="font-size: 48px; color: #4a5570; margin-bottom: 20px;"></i>
+                            <p style="font-size: 16px;">No approved applications yet</p>
+                        </div>
+                    </div>
+                </div>
 
-                        </tbody>
-                    </table>
-
-                    <div id="noPendingMessage" style="display: none; text-align: center; padding: 40px; color: #999;">
-                        <i class="fas fa-check-circle" style="font-size: 48px; color: #4CAF50; margin-bottom: 20px;"></i>
-                        <p style="font-size: 18px;">No Pending Applications</p>
+                <div id="rejectedView" class="sub-tab-content">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rejected Date</th>
+                                    <th>Organization</th>
+                                    <th>Sector</th>
+                                    <th>Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rejectedApplicationsTable"></tbody>
+                        </table>
+                        
+                        <div id="noRejectedMessage" style="display: none; text-align: center; padding: 40px; color: #5a6478;">
+                            <i class="fas fa-inbox" style="font-size: 48px; color: #4a5570; margin-bottom: 20px;"></i>
+                            <p style="font-size: 16px;">No rejected applications</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -547,6 +412,14 @@
                             <i class="fas fa-save"></i> Update Password
                         </button>
                     </form>
+                </div>
+            </div>
+            
+            <div id="customModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+                <div style="background:white; border-radius:12px; padding:30px; max-width:480px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+                    <h3 id="modalTitle" style="color:#1e3c72; margin-bottom:12px;"></h3>
+                    <p id="modalMessage" style="color:#555; margin-bottom:24px; white-space:pre-line;"></p>
+                    <div id="modalButtons" style="display:flex; gap:10px; justify-content:flex-end;"></div>
                 </div>
             </div>
         </main>

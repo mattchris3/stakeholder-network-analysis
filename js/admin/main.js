@@ -3,6 +3,7 @@ import { ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-dat
 import { displayOverview } from './overview.js';
 import { setupViewButtons } from './view-switcher.js';
 import { displayModifyTables } from './modify.js';
+import { displayPendingApplications } from './pending.js';
 
 export let allEntities = [];
 export let allMeetings = [];
@@ -56,6 +57,8 @@ function switchAdminTab(tabName) {
         loadAdminData();
     } else if (tabName === 'admin-modify') {
         displayModifyTables();
+    } else if (tabName === 'admin-pending') {
+        displayPendingApplications();
     }
 }
 
@@ -92,3 +95,4 @@ async function loadAdminData() {
         console.error('Error loading admin data:', error);
     }
 }
+

@@ -2,13 +2,13 @@ import { allLinks } from './data.js';
 import { showEntityDetails } from './sidebar.js';
 
 let simulation = null;
-let svg, g, zoom;
+let svg, g, zoom, container;
 
 // D3 initialization
 export function createD3Visualization(nodes, links) {
+    container = document.getElementById('network');
     d3.select('#network').selectAll('svg').remove();
 
-    const container = document.getElementById('network');
     const width = container.clientWidth;
     const height = container.clientHeight;
 
@@ -22,49 +22,13 @@ export function createD3Visualization(nodes, links) {
     zoom = d3.zoom()
         .scaleExtent([0.5, 3])
         .on('zoom', (event) => {
-            g.attr('transform', event.transform);
+            const k = event.transform.k;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            g.attr('transform', `translate(${w/2},${h/2}) scale(${k}) translate(${-w/2},${-h/2})`);
         });
 
     svg.call(zoom);
-
-    svg.on('wheel.zoom', function(event) {
-        event.preventDefault();
-        
-        const currentTransform = d3.zoomTransform(svg.node());
-        const delta = -event.deltaY * 0.002;
-        const newScale = Math.max(0.5, Math.min(3, currentTransform.k * Math.exp(delta)));
-        
-        const centerX = width / 2;
-        const centerY = height / 2;
-        
-        const newTransform = d3.zoomIdentity
-            .translate(centerX, centerY)
-            .scale(newScale)
-            .translate(-centerX, -centerY);
-        
-        svg.transition()
-            .duration(50)
-            .call(zoom.transform, newTransform);
-    });
-    
-    svg.on('dblclick.zoom', function(event) {
-        event.preventDefault();
-        
-        const currentTransform = d3.zoomTransform(svg.node());
-        const newScale = currentTransform.k === 1 ? 2 : 1;
-        
-        const centerX = width / 2;
-        const centerY = height / 2;
-        
-        const newTransform = d3.zoomIdentity
-            .translate(centerX, centerY)
-            .scale(newScale)
-            .translate(-centerX, -centerY);
-        
-        svg.transition()
-            .duration(300)
-            .call(zoom.transform, newTransform);
-    });
 
     simulation = d3.forceSimulation(nodes)
         .force('link', d3.forceLink(links).id(d => d.id).distance(250))
@@ -89,9 +53,9 @@ export function createD3Visualization(nodes, links) {
         .data(nodes)
         .enter().append('circle')
         .attr('class', 'node')
-        .attr('r', d => Math.sqrt(d.meetings) * 5 + 15)
+        .attr('r', d => Math.sqrt(d.meetings) * 4 + 20)
         .attr('fill', d => getSectorColor(d.sector))
-        .attr('opacity', d => d.meetings === 0 ? 0.5 : 1)
+        .attr('opacity', d => d.meetings === 0 ? 0.8 : 1)
         .call(drag(simulation));
 
     const label = g.append('g')
@@ -142,19 +106,24 @@ export function createD3Visualization(nodes, links) {
         });
 
     simulation.on('tick', () => {
+        const padding = 50;
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        
+        node.each(function(d) {
+            const radius = Math.sqrt(d.meetings) * 5 + 15;
+            d.x = Math.max(radius + padding, Math.min(w - radius - padding, d.x));
+            d.y = Math.max(radius + padding, Math.min(h - radius - padding, d.y));
+        });
+        
         link
             .attr('x1', d => d.source.x)
             .attr('y1', d => d.source.y)
             .attr('x2', d => d.target.x)
             .attr('y2', d => d.target.y);
 
-        node
-            .attr('cx', d => d.x)
-            .attr('cy', d => d.y);
-
-        label
-            .attr('x', d => d.x)
-            .attr('y', d => d.y + 5);
+        node.attr('cx', d => d.x).attr('cy', d => d.y);
+        label.attr('x', d => d.x).attr('y', d => d.y + 5);
     });
 }
 
@@ -216,3 +185,27 @@ export function resetZoom() {
         .duration(750)
         .call(zoom.transform, d3.zoomIdentity);
 }
+
+window.addEventListener('resize', () => {
+    if (!svg || !simulation || !container) return;
+
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+
+    svg.attr('width', w).attr('height', h);
+
+    simulation
+        .force('center', d3.forceCenter(w / 2, h / 2))
+        .force('x', d3.forceX(w / 2).strength(0.08))
+        .force('y', d3.forceY(h / 2).strength(0.08))
+        .alpha(0.3)
+        .restart();
+
+    const currentTransform = d3.zoomTransform(svg.node());
+    const k = currentTransform.k;
+    svg.call(zoom.transform, d3.zoomIdentity
+        .translate(w / 2, h / 2)
+        .scale(k)
+        .translate(-w / 2, -h / 2)
+    );
+});

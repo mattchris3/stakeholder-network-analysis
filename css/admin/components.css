@@ -228,12 +228,14 @@
     gap: 40px;
     align-items: center;
     justify-content: center;
+    max-height: 300px;
 }
 
 .chart-container canvas {
-    max-width: 400px;
-    max-height: 400px;
-    flex-shrink: 0;
+    width: auto !important;
+    max-width: 280px;
+    height: 280px !important;
+    max-height: 280px;
 }
 
 .sector-list {

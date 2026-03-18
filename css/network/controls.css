@@ -4,7 +4,8 @@
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     backdrop-filter: blur(10px);
-    position: relative; 
+    position: relative;
+    overflow: hidden;
 }
 
 .controls-header {
@@ -12,6 +13,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .controls-header h3 {
@@ -24,7 +27,9 @@
 
 .search-box {
     position: relative;
-    width: 300px;
+    flex: 1;
+    min-width: 180px;
+    max-width: 300px;
 }
 
 .search-box input {
@@ -52,61 +57,67 @@
 
 .controls-row {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     flex-wrap: wrap;
-    align-items: end;
+    align-items: flex-end;
 }
 
 .control-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    flex: 1;
+    min-width: 130px;
 }
 
 .control-group label {
-    font-size: 12px;
+    font-size: 11px;
     color: #666;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
-select, button {
-    padding: 10px 26px;
+select {
+    padding: 9px 12px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 13px;
     cursor: pointer;
     transition: all 0.3s;
     background: white;
+    width: 100%;
 }
 
-select:hover, button:hover {
+select:hover {
     border-color: #2c5aa0;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 button {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
     background: linear-gradient(135deg, #2c5aa0 0%, #1e3c72 100%);
     color: white;
-    border: none;
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    white-space: nowrap;
 }
 
 button:hover {
     background: linear-gradient(135deg, #1e3c72 0%, #163059 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 button.secondary {
     background: linear-gradient(135deg, #2c5aa0 0%, #245a8f 100%);
-}
-
-button.secondary:hover {
-    background: linear-gradient(135deg, #245a8f 0%, #1e4a75 100%);
 }
 
 button.danger {
@@ -115,32 +126,79 @@ button.danger {
 
 .button-group {
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: flex-end;
 }
 
-.export-menu {
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
     position: absolute;
-    top: 60px;
-    right: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-    padding: 10px;
-    display: none;
-    z-index: 1000;
-}
-
-.export-menu.show {
-    display: block;
-}
-
-.export-option {
-    padding: 10px 15px;
     cursor: pointer;
-    transition: all 0.3s;
-    border-radius: 4px;
+    inset: 0;
+    background: #ccc;
+    border-radius: 24px;
+    transition: 0.3s;
 }
 
-.export-option:hover {
-    background: #f5f5f5;
+.slider:before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+input:checked + .slider {
+    background: linear-gradient(135deg, #2c5aa0, #1e3c72);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+@media (max-width: 768px) {
+    .controls-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: 100%;
+    }
+
+    .control-group {
+        min-width: calc(50% - 6px);
+    }
+
+    .button-group {
+        width: 100%;
+    }
+
+    .button-group button {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .control-group {
+        min-width: 100%;
+    }
 }

@@ -18,14 +18,18 @@ export function displayOrganizationsTable() {
         }
     });
 
-    allEntities.forEach(entity => {
+    const approvedEntities = allEntities.filter(e => e.approval === 'approved');
+
+    approvedEntities.forEach(entity => {
         const count = meetingCounts[entity.id] || 0;
+        const statusColor = entity.status === 'active' ? '#60b070' : '#c06060';
         const row = document.createElement('tr');
         row.style.cursor = 'pointer';
         row.onclick = () => showOrganizationDetails(entity.id);
         row.innerHTML = `
             <td>${entity.fullName || entity.name}</td>
             <td>${entity.sector ? entity.sector.charAt(0).toUpperCase() + entity.sector.slice(1) : 'Unknown'}</td>
+            <td><span style="color: ${statusColor}; font-weight: 600;">${entity.status}</span></td>
             <td>${count}</td>
         `;
         tbody.appendChild(row);
@@ -38,6 +42,8 @@ function showOrganizationDetails(entityId) {
         console.error('Entity not found:', entityId);
         return;
     }
+
+    const statusColor = entity.status === 'active' ? '#60b070' : '#c06060';
 
     const detailContent = `
         <h2>${entity.fullName || entity.name}</h2>
@@ -53,6 +59,12 @@ function showOrganizationDetails(entityId) {
             <li>
                 <strong>Sector:</strong>
                 ${entity.sector ? entity.sector.charAt(0).toUpperCase() + entity.sector.slice(1) : 'Not specified'}
+            </li>
+            <li>
+                <strong>Status:</strong>
+                <span style="color: ${statusColor}; font-weight: 600;">
+                    ${entity.status}
+                </span>
             </li>
             <li>
                 <strong>Description:</strong>
@@ -77,12 +89,6 @@ function showOrganizationDetails(entityId) {
             <li>
                 <strong>Location:</strong>
                 ${entity.location || 'Not specified'}
-            </li>
-            <li>
-                <strong>Status:</strong>
-                <span style="color: ${entity.status === 'active' ? 'green' : 'orange'}">
-                    ${entity.status || 'active'}
-                </span>
             </li>
         </ul>
     `;

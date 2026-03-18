@@ -8,6 +8,9 @@ import { resetZoom } from './visualization.js';
 document.addEventListener('DOMContentLoaded', () => {
     loadVisualization();
 });
+document.getElementById('showIsolatedNodes').addEventListener('change', () => {
+    loadVisualization();
+});
 
 document.getElementById('viewMode').addEventListener('change', applyFilters);
 document.getElementById('filterSector').addEventListener('change', applyFilters);

@@ -21,9 +21,11 @@ async function displaySectorChart() {
         existingChart.destroy();
     }
 
+    const approvedEntities = allEntities.filter(entity => entity.approval === 'approved');
+
     const sectorCounts = {};
     
-    allEntities.forEach(entity => {
+    approvedEntities.forEach(entity => {
         const sector = entity.sector || 'unknown';
         sectorCounts[sector] = (sectorCounts[sector] || 0) + 1;
     });
@@ -112,3 +114,14 @@ async function displaySectorList(sectorCounts) {
         requestAnimationFrame(() => resolve());
     });
 }
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        const canvas = document.getElementById('sectorChart');
+        if (canvas && canvas.offsetParent !== null) {
+            displaySectorChart();
+        }
+    }, 300);
+});
