@@ -33,7 +33,7 @@ document.getElementById('memberLoginForm')?.addEventListener('submit', async (e)
             throw new Error('Invalid Unity ID or Member ID');
         }
         
-        if (entityFound.status !== 'active') {
+        if (entityFound.approval !== 'approved') {
             throw new Error('Your organization is not active. Please contact the administrator.');
         }
         
