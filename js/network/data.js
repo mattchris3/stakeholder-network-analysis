@@ -7,6 +7,8 @@ export let allNodes = [];
 export let allLinks = [];
 export let currentNodes = [];
 export let currentLinks = [];
+export let currentPeriodNodes = [];
+let allMeetings = [];
 
 export async function loadVisualization() {
     try {
@@ -42,6 +44,7 @@ export async function loadVisualization() {
                 meeting && meeting.unityId === currentUnityId
             );
         }
+        allMeetings = meetings;
 
         document.querySelector('.loading').style.display = 'none';
 
@@ -81,10 +84,14 @@ function processNetworkData(entities, meetings) {
                             connectionMap[key] = {
                                 source: id1,
                                 target: id2,
-                                value: 0
+                                value: 0,
+                                dates: [],
+                                meetingIds: []
                             };
                         }
                         connectionMap[key].value++;
+                        connectionMap[key].dates.push(meeting.date);
+                        connectionMap[key].meetingIds.push(meeting.id);
                     }
                 }
             }
@@ -135,10 +142,12 @@ export function applyFilters() {
 
     const nodeIds = new Set(currentNodes.map(node => node.id));
 
-    currentLinks = allLinks.filter(link => 
-        nodeIds.has(link.source.id || link.source) &&
-        nodeIds.has(link.target.id || link.target)
-    );
+    currentLinks = allLinks
+        .map(link => ({ ...link, dates: [...link.dates] }))
+        .filter(link => 
+            nodeIds.has(link.source || link.source.id) &&
+            nodeIds.has(link.target || link.target.id)
+        );
 
     if (strength === 'strong') {
         currentLinks = currentLinks.filter(link => link.value >= 3);
@@ -158,8 +167,50 @@ export function applyFilters() {
         
         currentNodes = currentNodes.filter(node => connectedIds.has(node.id));
     }
-    
-    updateStatistics(currentNodes, currentLinks);
+
+    const timePeriod = document.getElementById('timePeriod').value;
+    if (timePeriod !== 'all') {
+        const now = new Date();
+        let cutoff;
+
+        if (timePeriod === '3') {
+            cutoff = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+        } else if (timePeriod === '6') {
+            cutoff = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+        } else if (timePeriod === '9') {
+            cutoff = new Date(now.getFullYear(), now.getMonth() - 9, now.getDate());
+        }
+
+        currentLinks = currentLinks.map(link => {
+            const periodDates = link.dates.filter(date => new Date(date).getTime() >= cutoff.getTime());
+            return { ...link, value: periodDates.length, dates: periodDates };
+        })
+        .filter(link => link.value > 0);
+
+        const connectedIds = new Set();
+        currentLinks.forEach(link => {
+            connectedIds.add(link.source.id || link.source);
+            connectedIds.add(link.target.id || link.target);
+        });
+
+        currentNodes = currentNodes.filter(node => connectedIds.has(node.id));
+
+        currentPeriodNodes = currentNodes.map(node => {
+            const periodMeetings = allMeetings.filter(meeting => 
+                new Date(meeting.date).getTime() >= cutoff.getTime() &&
+                meeting.participants.includes(node.id)
+            ).length;
+            return { ...node, meetings: periodMeetings };
+        });
+
+        updateStatistics(currentPeriodNodes, currentLinks);
+        updateSidebarTopEntities(currentPeriodNodes);
+    } else {
+        currentPeriodNodes = [...currentNodes]
+        updateStatistics();
+        updateSidebarTopEntities();
+    }
+
     createD3Visualization(currentNodes, currentLinks);
 }
 
@@ -167,6 +218,7 @@ export function clearFilters() {
     document.getElementById('viewMode').value = 'all';
     document.getElementById('filterSector').value = 'all';
     document.getElementById('connectionStrength').value = 'all';
+    document.getElementById('timePeriod').value = 'all';
     document.getElementById('searchInput').value = '';
     applyFilters();
 }

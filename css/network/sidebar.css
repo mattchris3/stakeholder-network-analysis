@@ -96,21 +96,32 @@
     margin-bottom: 15px;
     padding-bottom: 10px;
     border-bottom: 2px solid #2c5aa0;
+    font-size: 14px;
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
+    padding: 6px 0;
     border-bottom: 1px solid #e0e0e0;
 }
 
 .detail-label {
     color: #666;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .detail-value {
     font-weight: 600;
     color: #1e3c72;
+    font-size: 12px;
+}
+
+.network-row .sidebar {
+    width: 300px;
+    min-width: 260px;
+    max-height: calc(100vh - 420px);
+    overflow-y: auto;
+    position: sticky;
+    top: 90px;
 }

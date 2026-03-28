@@ -1,5 +1,5 @@
 import { allLinks } from './data.js';
-import { showEntityDetails } from './sidebar.js';
+import { selectEntity } from './sidebar.js';
 
 let simulation = null;
 let svg, g, zoom, container;
@@ -31,12 +31,12 @@ export function createD3Visualization(nodes, links) {
     svg.call(zoom);
 
     simulation = d3.forceSimulation(nodes)
-        .force('link', d3.forceLink(links).id(d => d.id).distance(250))
-        .force('charge', d3.forceManyBody().strength(-1200))
+        .force('link', d3.forceLink(links).id(d => d.id).distance(200))
+        .force('charge', d3.forceManyBody().strength(-900))
         .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius(d => Math.sqrt(d.meetings) * 5 + 40))
-        .force('x', d3.forceX(width / 2).strength(0.08))
-        .force('y', d3.forceY(height / 2).strength(0.08));
+        .force('collision', d3.forceCollide().radius(d => Math.sqrt(d.meetings) * 3 + 25))
+        .force('x', d3.forceX(width / 2).strength(0.15))
+        .force('y', d3.forceY(height / 2).strength(0.15));
 
     const link = g.append('g')
         .selectAll('line')
@@ -53,7 +53,7 @@ export function createD3Visualization(nodes, links) {
         .data(nodes)
         .enter().append('circle')
         .attr('class', 'node')
-        .attr('r', d => Math.sqrt(d.meetings) * 4 + 20)
+        .attr('r', d => Math.sqrt(d.meetings) * 3 + 12)
         .attr('fill', d => getSectorColor(d.sector))
         .attr('opacity', d => d.meetings === 0 ? 0.8 : 1)
         .call(drag(simulation));
@@ -101,7 +101,7 @@ export function createD3Visualization(nodes, links) {
             tooltip.style('display', 'none');
         })
         .on('click', (event, d) => {
-            showEntityDetails(d);
+            selectEntity(d.id);
             highlightNode(d.id); 
         });
 
@@ -111,7 +111,7 @@ export function createD3Visualization(nodes, links) {
         const h = container.clientHeight;
         
         node.each(function(d) {
-            const radius = Math.sqrt(d.meetings) * 5 + 15;
+            const radius = Math.sqrt(d.meetings) * 3 + 12;
             d.x = Math.max(radius + padding, Math.min(w - radius - padding, d.x));
             d.y = Math.max(radius + padding, Math.min(h - radius - padding, d.y));
         });

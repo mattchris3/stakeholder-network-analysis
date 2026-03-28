@@ -187,7 +187,7 @@
       "id": "MEET-001",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Global Health Summit",
-      "date": "2024-01-15",
+      "date": "2025-06-15",
       "purpose": "Establish global health priorities and vaccination strategies for developing nations",
       "outcome": "Agreed on accelerated vaccine distribution framework for 50 countries by Q2 2024",
       "participants": ["WHO-001", "UNICEF-001", "GAVI-001"]
@@ -196,7 +196,7 @@
       "id": "MEET-002",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Disease Prevention Workshop",
-      "date": "2024-02-20",
+      "date": "2025-07-20",
       "purpose": "Share best practices for infectious disease prevention and outbreak response protocols",
       "outcome": "Developed unified early warning system for disease outbreaks across three continents",
       "participants": ["WHO-001", "MSF-001", "CDC-001"]
@@ -205,7 +205,7 @@
       "id": "MEET-003",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Humanitarian Aid Coordination",
-      "date": "2024-03-10",
+      "date": "2025-08-10",
       "purpose": "Coordinate relief efforts for regions affected by natural disasters and conflicts",
       "outcome": "Established joint rapid response team with $50M emergency fund allocation",
       "participants": ["UNICEF-001", "REDC-001", "GATES-001"]
@@ -214,7 +214,7 @@
       "id": "MEET-004",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Emergency Response Planning",
-      "date": "2024-04-05",
+      "date": "2025-09-05",
       "purpose": "Plan emergency medical response procedures for crisis situations in conflict zones",
       "outcome": "Created standardized emergency protocol for field hospitals in high-risk areas",
       "participants": ["REDC-001", "MSF-001"]
@@ -223,7 +223,7 @@
       "id": "MEET-005",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Vaccine Distribution Strategy",
-      "date": "2024-05-12",
+      "date": "2025-10-12",
       "purpose": "Design efficient vaccine supply chain and cold storage solutions for remote areas",
       "outcome": "Approved $120M investment in cold chain infrastructure across 35 countries",
       "participants": ["WHO-001", "UNICEF-001", "CDC-001", "GAVI-001"]
@@ -232,7 +232,7 @@
       "id": "MEET-006",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Public Health Policy Review",
-      "date": "2024-06-18",
+      "date": "2025-11-18",
       "purpose": "Review and update public health policies based on recent pandemic learnings",
       "outcome": "Recommended 12 policy changes to improve pandemic preparedness and response",
       "participants": ["WHO-001", "CDC-001", "HARV-001"]
@@ -241,7 +241,7 @@
       "id": "MEET-007",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Crisis Management Training",
-      "date": "2024-07-22",
+      "date": "2025-12-22",
       "purpose": "Train field staff on crisis management and emergency response in humanitarian contexts",
       "outcome": "Certified 250 personnel in advanced crisis management protocols",
       "participants": ["UNICEF-001", "REDC-001", "MSF-001"]
@@ -250,7 +250,7 @@
       "id": "MEET-008",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Health Data Sharing Agreement",
-      "date": "2024-08-30",
+      "date": "2026-01-08",
       "purpose": "Establish secure framework for sharing health data across international organizations",
       "outcome": "Signed data sharing agreement enabling real-time health surveillance across 40 nations",
       "participants": ["WHO-001", "MSF-001", "HARV-001", "OXFD-001"]
@@ -259,7 +259,7 @@
       "id": "MEET-009",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Disaster Relief Coordination",
-      "date": "2024-09-14",
+      "date": "2026-01-14",
       "purpose": "Coordinate disaster relief operations and resource allocation for recent flooding events",
       "outcome": "Deployed relief to 15 affected regions with coordinated logistics saving 30% costs",
       "participants": ["REDC-001", "UNICEF-001", "GATES-001"]
@@ -268,7 +268,7 @@
       "id": "MEET-010",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Annual Health Conference",
-      "date": "2024-10-25",
+      "date": "2026-01-25",
       "purpose": "Review annual health metrics and set strategic goals for the upcoming year",
       "outcome": "Set ambitious targets to reduce child mortality by 15% and increase vaccination rates by 20%",
       "participants": ["WHO-001", "UNICEF-001", "MSF-001", "CDC-001", "GAVI-001"]
@@ -277,7 +277,7 @@
       "id": "MEET-011",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Education in Health Workshop",
-      "date": "2024-11-05",
+      "date": "2026-02-05",
       "purpose": "Develop educational programs to improve health literacy in underserved communities",
       "outcome": "Launched 10 pilot health education programs in partnership with local schools",
       "participants": ["HARV-001", "OXFD-001", "WHO-001"]
@@ -286,7 +286,7 @@
       "id": "MEET-012",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Funding Opportunities Discussion",
-      "date": "2024-11-20",
+      "date": "2026-02-20",
       "purpose": "Explore funding opportunities and investment strategies for health initiatives",
       "outcome": "Secured $200M in funding commitments for vaccine research and distribution programs",
       "participants": ["WBANK-001", "GATES-001", "GAVI-001"]
@@ -295,7 +295,7 @@
       "id": "MEET-013",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Research Collaboration Meeting",
-      "date": "2024-12-01",
+      "date": "2026-03-01",
       "purpose": "Establish research partnerships for developing new treatment protocols and medications",
       "outcome": "Initiated 5 joint research projects on infectious disease treatment innovations",
       "participants": ["HARV-001", "OXFD-001", "MSF-001"]
@@ -304,7 +304,7 @@
       "id": "MEET-014",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Global Health Financing",
-      "date": "2024-12-10",
+      "date": "2026-03-10",
       "purpose": "Discuss sustainable financing models for long-term global health programs",
       "outcome": "Approved innovative financing mechanism generating $500M over 5 years",
       "participants": ["WBANK-001", "WHO-001", "GATES-001"]
@@ -313,7 +313,7 @@
       "id": "MEET-015",
       "unityId": "UNITY-GLOBHEALTH-2025",
       "title": "Emergency Preparedness Training",
-      "date": "2024-12-15",
+      "date": "2026-03-15",
       "purpose": "Conduct emergency preparedness drills and update response protocols for health workers",
       "outcome": "Trained 500 healthcare workers and updated emergency response guidelines",
       "participants": ["CDC-001", "REDC-001", "UNICEF-001"]

@@ -1,4 +1,9 @@
-import { allNodes, allLinks } from './data.js';
+import { allNodes, 
+    allLinks, 
+    currentLinks, 
+    currentNodes, 
+    currentPeriodNodes 
+} from './data.js';
 import { highlightNode } from './visualization.js';
 
 export function updateStatistics() {
@@ -13,8 +18,10 @@ export function updateStatistics() {
     document.getElementById('avgConnections').textContent = avgConn;
 }
 
-export function updateSidebarTopEntities() {
-    const topEntities = [...allNodes]
+export function updateSidebarTopEntities(nodes) {
+    const source = nodes || allNodes;
+    
+    const topEntities = [...source]
         .sort((a, b) => b.meetings - a.meetings)
         .slice(0, 5);
 
@@ -32,7 +39,8 @@ export function updateSidebarTopEntities() {
 }
 
 export function selectEntity(entityId) {
-    const entity = allNodes.find(node => node.id === entityId);
+    const entity = currentPeriodNodes.find(node => node.id === entityId) 
+        || allNodes.find(node => node.id === entityId);
     if (entity) {
         showEntityDetails(entity);
         highlightNode(entityId);
@@ -42,7 +50,7 @@ export function selectEntity(entityId) {
 export function showEntityDetails(entity) {
     switchTab('details');
     
-    const connections = allLinks.filter(link => 
+    const connections = currentLinks.filter(link => 
         link.source.id === entity.id || link.target.id === entity.id ||
         link.source === entity.id || link.target === entity.id
     );
@@ -50,7 +58,8 @@ export function showEntityDetails(entity) {
     const collaborators = connections.map(link => {
         const partnerId = (link.source.id || link.source) === entity.id ? 
             (link.target.id || link.target) : (link.source.id || link.source);
-        const partner = allNodes.find(n => n.id === partnerId);
+        const partner = currentPeriodNodes.find(n => n.id === partnerId) 
+            || allNodes.find(n => n.id === partnerId);
         return partner ? {
             name: partner.name,
             fullName: partner.fullName,

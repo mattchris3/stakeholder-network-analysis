@@ -17,6 +17,8 @@ document.getElementById('filterSector').addEventListener('change', applyFilters)
 document.getElementById('connectionStrength').addEventListener('change', applyFilters);
 document.getElementById('searchInput').addEventListener('input', applyFilters);
 document.getElementById('showIsolatedNodes').addEventListener('change', applyFilters);
+document.getElementById('timePeriod').addEventListener('change', applyFilters);
+
 
 window.loadVisualization = loadVisualization;
 window.resetZoom = resetZoom;
