@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New Unity - Organization Network</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/welcome-create.css">
+    <link rel="stylesheet" href="css/welcome.css">
 </head>
 <body>
     <div class="container">
@@ -62,6 +62,23 @@
                 
                 <form id="adminAccountForm">
                     <div class="form-group">
+                        <label for="focusAreas">
+                            <i class="fas fa-tags"></i>
+                            Focus Areas *
+                        </label>
+                        <p style="color:#888; font-size:13px; margin-bottom:10px;">
+                            Define the key focus areas for your network. Members will select from these when registering.
+                        </p>
+                        <div style="display:flex; gap:8px; margin-bottom:12px;">
+                            <input type="text" id="focusAreaInput" placeholder="e.g., Disease Surveillance">
+                            <button type="button" class="submit-btn" style="width:auto; margin:0; padding:12px 20px;" onclick="addFocusArea()">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div id="focusAreaTags" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="adminUsername">
                             <i class="fas fa-user"></i>
                             Username *
@@ -103,7 +120,7 @@
                     </div>
 
                     <div class="button-group">
-                        <button type="button" class="back-btn" onclick="showStep1()">
+                        <button type="button" class="back-btn" onclick="switchStep(1)">
                             <i class="fas fa-arrow-left"></i>
                             Back
                         </button>
@@ -142,6 +159,13 @@
                         <div class="review-value" id="reviewAdminUsername">—</div>
                     </div>
 
+                    <div class="review-item">
+                        <div class="review-label">
+                            <i class="fas fa-tags"></i> Focus Areas
+                        </div>
+                        <div class="review-value" id="reviewFocusAreas">—</div>
+                    </div>
+
                     <div class="review-item highlight">
                         <div class="review-label">
                             <i class="fas fa-key"></i> Unity Access Code
@@ -154,7 +178,7 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="button" class="back-btn" onclick="showStep2()">
+                    <button type="button" class="back-btn" onclick="switchStep(2)">
                         <i class="fas fa-arrow-left"></i>
                         Back
                     </button>

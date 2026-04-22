@@ -44,7 +44,7 @@ async function uploadData() {
         console.log(`Uploaded meeting: ${meetingId}`);
       }
     }
-    
+
     process.exit(0);
     
   } catch (error) {

@@ -15,14 +15,14 @@
 
 .stat-box i {
     font-size: 40px;
-    color: #2c5aa0;
+    color: #1a3a5c;
     margin-bottom: 15px;
 }
 
 .stat-number {
     font-size: 36px;
     font-weight: 700;
-    color: #1e3c72;
+    color: #111d35;
     margin-bottom: 5px;
 }
 
@@ -65,14 +65,14 @@
 }
 
 .view-btn:hover {
-    border-color: #2c5aa0;
+    border-color: #1a3a5c;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.2);
+    box-shadow: 0 4px 12px rgba(26, 58, 92, 0.2);
 }
 
 .view-btn.active {
-    background: linear-gradient(135deg, #2c5aa0, #1e3c72);
-    border-color: #2c5aa0;
+    background: linear-gradient(135deg, #1a3a5c, #111d35);
+    border-color: #1a3a5c;
 }
 
 .view-btn.active i,
@@ -100,7 +100,7 @@
 
 .data-section h3 {
     margin-bottom: 20px;
-    color: #1e3c72;
+    color: #111d35;
     font-size: 20px;
 }
 
@@ -114,7 +114,7 @@
 
 .modify-section h3 {
     margin-bottom: 15px;
-    color: #1e3c72;
+    color: #111d35;
     font-size: 20px;
 }
 
@@ -132,14 +132,14 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #2c5aa0, #1e3c72);
+    background: linear-gradient(135deg, #1a3a5c, #111d35);
     color: white;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #1e3c72, #163059);
+    background: linear-gradient(135deg, #111d35, #0a1628);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+    box-shadow: 0 4px 12px rgba(26, 58, 92, 0.3);
 }
 
 .btn-secondary {
@@ -181,7 +181,7 @@
 
 .settings-section h3 {
     margin-bottom: 20px;
-    color: #1e3c72;
+    color: #111d35;
     font-size: 20px;
 }
 
@@ -206,7 +206,7 @@
 
 .settings-form input:focus {
     outline: none;
-    border-color: #2c5aa0;
+    border-color: #1a3a5c;
 }
 
 .chart-section {
@@ -219,7 +219,7 @@
 
 .chart-section h3 {
     margin-bottom: 20px;
-    color: #1e3c72;
+    color: #111d35;
     text-align: center;
 }
 
@@ -262,11 +262,11 @@
 
 .sector-name {
     font-weight: 600;
-    color: #1e3c72;
+    color: #111d35;
 }
 
 .sector-count {
-    background: linear-gradient(135deg, #2c5aa0, #1e3c72);
+    background: linear-gradient(135deg, #1a3a5c, #111d35);
     color: white;
     padding: 4px 12px;
     border-radius: 12px;

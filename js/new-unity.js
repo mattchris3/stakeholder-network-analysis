@@ -7,7 +7,8 @@ let unityData = {
     adminUsername: '',
     adminPassword: '',
     unityId: '',
-    accessCode: ''
+    accessCode: '',
+    focusAreas: []
 };
 
 document.getElementById('unityInfoForm')?.addEventListener('submit', (e) => {
@@ -21,7 +22,7 @@ document.getElementById('unityInfoForm')?.addEventListener('submit', (e) => {
         return;
     }
     
-    showStep2();
+    switchStep(2);
 });
 
 document.getElementById('adminAccountForm')?.addEventListener('submit', (e) => {
@@ -45,12 +46,17 @@ document.getElementById('adminAccountForm')?.addEventListener('submit', (e) => {
         alert('Passwords do not match');
         return;
     }
+
+    if (unityData.focusAreas.length === 0) {
+        alert('Please add at least one focus area');
+        return;
+    }
     
     unityData.adminUsername = username;
     unityData.adminPassword = password;
     
     generateIds();
-    showStep3();
+    switchStep(3);
 });
 
 function generateIds() {
@@ -66,6 +72,7 @@ function generateIds() {
     document.getElementById('reviewUnityName').textContent = unityData.name;
     document.getElementById('reviewUnityDescription').textContent = unityData.description;
     document.getElementById('reviewAdminUsername').textContent = unityData.adminUsername;
+    document.getElementById('reviewFocusAreas').textContent = unityData.focusAreas.join(', ');
     document.getElementById('reviewAccessCode').textContent = unityData.accessCode;
 }
 
@@ -88,7 +95,7 @@ window.createUnity = async function() {
         
         if (exists) {
             alert('A unity with this name already exists. Please choose a different name.');
-            showStep1();
+            switchStep(1);
             btn.disabled = false;
             btn.querySelector('span').textContent = 'Create Unity';
             return;
@@ -125,6 +132,7 @@ async function saveUnityToDatabase() {
         name: unityData.name,
         description: unityData.description,
         accessCode: unityData.accessCode,
+        focusAreas: unityData.focusAreas,
         created: new Date().toISOString().split('T')[0]
     };
     
@@ -164,20 +172,7 @@ function showSuccess() {
     switchStep('success');
 }
 
-function showStep1() {
-    switchStep(1);
-}
-
-function showStep2() {
-    switchStep(2);
-}
-
-function showStep3() {
-    switchStep(3);
-}
-
-window.showStep1 = showStep1;
-window.showStep2 = showStep2;
+window.switchStep = switchStep;
 
 window.copyAccessCode = function() {
     const code = unityData.accessCode;
@@ -191,3 +186,31 @@ window.copyAccessCode = function() {
 window.goToAdminLogin = function() {
     window.location.href = 'welcome-admin.html';
 };
+
+window.addFocusArea = function() {
+    const input = document.getElementById('focusAreaInput');
+    const value = input.value.trim();
+    if (!value) return;
+    if (unityData.focusAreas.includes(value)) {
+        input.value = '';
+        return;
+    }
+    unityData.focusAreas.push(value);
+    input.value = '';
+    renderFocusAreaTags();
+};
+
+window.removeFocusArea = function(index) {
+    unityData.focusAreas.splice(index, 1);
+    renderFocusAreaTags();
+};
+
+function renderFocusAreaTags() {
+    const container = document.getElementById('focusAreaTags');
+    container.innerHTML = unityData.focusAreas.map((area, i) => `
+        <span style="background:#111d35; color:white; padding:6px 12px; border-radius:20px; font-size:13px; display:inline-flex; align-items:center; gap:6px;">
+            ${area}
+            <i class="fas fa-times" style="cursor:pointer; font-size:11px;" onclick="removeFocusArea(${i})"></i>
+        </span>
+    `).join('');
+}

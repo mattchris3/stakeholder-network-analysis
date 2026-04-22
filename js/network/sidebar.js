@@ -2,7 +2,8 @@ import { allNodes,
     allLinks, 
     currentLinks, 
     currentNodes, 
-    currentPeriodNodes 
+    currentPeriodNodes,
+    allMeetings
 } from './data.js';
 import { highlightNode } from './visualization.js';
 
@@ -10,8 +11,7 @@ export function updateStatistics() {
     document.getElementById('entityCount').textContent = allNodes.length;
     document.getElementById('connectionCount').textContent = allLinks.length;
     
-    const totalMeetings = allNodes.reduce((sum, node) => sum + node.meetings, 0);
-    document.getElementById('meetingCount').textContent = totalMeetings;
+    document.getElementById('meetingCount').textContent = allMeetings.length;
     
     const avgConn = allNodes.length > 0 ? 
         (allLinks.length * 2 / allNodes.length).toFixed(1) : 0;
@@ -23,9 +23,9 @@ export function updateSidebarTopEntities(nodes) {
     
     const topEntities = [...source]
         .sort((a, b) => b.meetings - a.meetings)
-        .slice(0, 5);
+        .slice(0, 8);
 
-    const listHTML = topEntities.map(entity => `
+    document.getElementById('topEntities').innerHTML = topEntities.map(entity => `
         <li class="entity-item" onclick="window.selectEntity('${entity.id}')">
             <div>
                 <div class="entity-name">${entity.name}</div>
@@ -34,8 +34,6 @@ export function updateSidebarTopEntities(nodes) {
             <span class="entity-count">${entity.meetings} meetings</span>
         </li>
     `).join('');
-
-    document.getElementById('topEntities').innerHTML = listHTML;
 }
 
 export function selectEntity(entityId) {
@@ -90,7 +88,7 @@ export function showEntityDetails(entity) {
             </div>
         `).join('') : '<p style="color: #999;">No collaborations recorded</p>';
 
-    const detailsHTML = `
+    document.getElementById('entityDetails').innerHTML = `
         <div class="details-panel">
             <h4>${entity.fullName}</h4>
             <div class="detail-row">
@@ -112,6 +110,19 @@ export function showEntityDetails(entity) {
             <div class="detail-row">
                 <span class="detail-label">Total Collaborations:</span>
                 <span class="detail-value">${connections.length}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Funding Type:</span>
+                <span class="detail-value" style="text-transform:capitalize;">${entity.fundingType}</span>
+            </div>
+            <div style="margin-top:12px;">
+                <span class="detail-label">Focus Areas:</span>
+                <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
+                    ${entity.focusAreas.length > 0
+                        ? entity.focusAreas.map(f => `<span style="background:#111d35; color:white; padding:3px 8px; border-radius:10px; font-size:11px;">${f}</span>`).join('')
+                        : '<span style="color:#888; font-size:12px;">None specified</span>'
+                    }
+                </div>
             </div>
             <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                 <strong>Link Strength Breakdown:</strong>
@@ -149,7 +160,6 @@ export function showEntityDetails(entity) {
         </div>
     `;
 
-    document.getElementById('entityDetails').innerHTML = detailsHTML;
     document.getElementById('entityDetails').style.display = 'block';
 }
 

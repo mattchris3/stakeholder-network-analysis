@@ -1,33 +1,11 @@
 import { database } from '../config.js';
 import { ref, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-import { allEntities } from './main.js';
+import { allAdminEntities, showModal, updateNotification } from '../main.js';
 
 export function displayPendingApplications() {
     displayPendingTable();
     displayApprovedTable();
     displayRejectedTable();
-}
-
-function showModal(title, message, buttons) {
-    document.getElementById('modalTitle').textContent = title;
-    document.getElementById('modalMessage').textContent = message;
-    const btnContainer = document.getElementById('modalButtons');
-    btnContainer.innerHTML = '';
-    buttons.forEach(({ label, style, onClick }) => {
-        const btn = document.createElement('button');
-        btn.textContent = label;
-        btn.className = `btn ${style}`;
-        btn.onclick = () => {
-            document.getElementById('customModal').style.display = 'none';
-            onClick();
-        };
-        btnContainer.appendChild(btn);
-    });
-    document.getElementById('customModal').style.display = 'flex';
-}
-
-function closeModal() {
-    document.getElementById('customModal').style.display = 'none';
 }
 
 function displayPendingTable() {
@@ -39,7 +17,7 @@ function displayPendingTable() {
 
     tbody.innerHTML = '';
 
-    const pendingEntities = allEntities.filter(e => e.approval === 'pending');
+    const pendingEntities = allAdminEntities.filter(e => e.approval === 'pending');
 
     if (pendingCount) {
         pendingCount.textContent = pendingEntities.length;
@@ -56,21 +34,18 @@ function displayPendingTable() {
         new Date(b.appliedDate) - new Date(a.appliedDate)
     );
 
-    pendingEntities.forEach(entity => {
-        const row = document.createElement('tr');
-        const appliedDate = new Date(entity.appliedDate).toLocaleDateString();
-
-        row.innerHTML = `
-            <td>${appliedDate}</td>
+    tbody.innerHTML = pendingEntities.map(entity => `
+        <tr>
+            <td>${new Date(entity.appliedDate).toLocaleDateString()}</td>
             <td>
                 <strong>${entity.name}</strong><br>
-                <small style="color: #5a6478;">${entity.fullName}</small>
+                <small style="color:#5a6478;">${entity.fullName}</small>
             </td>
             <td><span class="badge badge-${entity.sector}">${entity.sector}</span></td>
             <td>${entity.location || 'N/A'}</td>
             <td>
                 <div class="action-buttons">
-                    <button class="btn btn-sm btn-primary" onclick="viewApplication('${entity.id}')">
+                    <button class="btn btn-sm btn-primary" onclick="viewEntityDetail('${entity.id}')">
                         <i class="fas fa-eye"></i> View
                     </button>
                     <button class="btn btn-sm btn-success" onclick="approveApplication('${entity.id}')">
@@ -81,10 +56,8 @@ function displayPendingTable() {
                     </button>
                 </div>
             </td>
-        `;
-
-        tbody.appendChild(row);
-    });
+        </tr>
+    `).join('');
 }
 
 function displayApprovedTable() {
@@ -96,7 +69,7 @@ function displayApprovedTable() {
 
     tbody.innerHTML = '';
 
-    const approvedEntities = allEntities.filter(e => e.approval === 'approved');
+    const approvedEntities = allAdminEntities.filter(e => e.approval === 'approved');
 
     if (approvedCount) {
         approvedCount.textContent = approvedEntities.length;
@@ -113,31 +86,24 @@ function displayApprovedTable() {
         new Date(b.approvedDate || 0) - new Date(a.approvedDate || 0)
     );
 
-    approvedEntities.forEach(entity => {
-        const row = document.createElement('tr');
-        const approvedDate = entity.approvedDate
-            ? new Date(entity.approvedDate).toLocaleDateString()
-            : 'N/A';
-
-        row.innerHTML = `
-            <td>${approvedDate}</td>
+    tbody.innerHTML = approvedEntities.map(entity => `
+        <tr>
+            <td>${entity.approvedDate ? new Date(entity.approvedDate).toLocaleDateString() : 'N/A'}</td>
             <td>
                 <strong>${entity.name}</strong><br>
-                <small style="color: #5a6478;">${entity.fullName}</small>
+                <small style="color:#5a6478;">${entity.fullName}</small>
             </td>
             <td><span class="badge badge-${entity.sector}">${entity.sector}</span></td>
             <td>${entity.location || 'N/A'}</td>
             <td>
                 <div class="action-buttons">
-                    <button class="btn btn-sm btn-primary" onclick="viewApplication('${entity.id}')">
+                    <button class="btn btn-sm btn-primary" onclick="viewEntityDetail('${entity.id}')">
                         <i class="fas fa-eye"></i> View
                     </button>
                 </div>
             </td>
-        `;
-
-        tbody.appendChild(row);
-    });
+        </tr>
+    `).join('');
 }
 
 function displayRejectedTable() {
@@ -149,7 +115,7 @@ function displayRejectedTable() {
 
     tbody.innerHTML = '';
 
-    const rejectedEntities = allEntities.filter(e => e.approval === 'rejected');
+    const rejectedEntities = allAdminEntities.filter(e => e.approval === 'rejected');
 
     if (rejectedCount) {
         rejectedCount.textContent = rejectedEntities.length;
@@ -166,67 +132,44 @@ function displayRejectedTable() {
         new Date(b.rejectedDate || b.appliedDate) - new Date(a.rejectedDate || a.appliedDate)
     );
 
-    rejectedEntities.forEach(entity => {
-        const row = document.createElement('tr');
-        const rejectedDate = entity.rejectedDate
-            ? new Date(entity.rejectedDate).toLocaleDateString()
-            : 'N/A';
-
-        row.innerHTML = `
-            <td>${rejectedDate}</td>
+    tbody.innerHTML = rejectedEntities.map(entity => `
+        <tr>
+            <td>${entity.rejectedDate ? new Date(entity.rejectedDate).toLocaleDateString() : 'N/A'}</td>
             <td>
                 <strong>${entity.name}</strong><br>
-                <small style="color: #5a6478;">${entity.fullName}</small>
+                <small style="color:#5a6478;">${entity.fullName}</small>
             </td>
             <td><span class="badge badge-${entity.sector}">${entity.sector}</span></td>
             <td>${entity.location || 'N/A'}</td>
             <td>
                 <div class="action-buttons">
-                    <button class="btn btn-sm btn-primary" onclick="viewApplication('${entity.id}')">
+                    <button class="btn btn-sm btn-primary" onclick="viewEntityDetail('${entity.id}')">
                         <i class="fas fa-eye"></i> View
                     </button>
                 </div>
             </td>
-        `;
-
-        tbody.appendChild(row);
-    });
+        </tr>
+    `).join('');
 }
 
 window.switchPendingView = function(view) {
-    document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
+    document.querySelectorAll('#admin-pending-content .sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('#admin-pending-content .sub-tab-content').forEach(content => content.classList.remove('active'));
 
     if (view === 'pending') {
-        document.querySelector('.sub-tab-btn:nth-child(1)').classList.add('active');
+        document.querySelector('#admin-pending-content .sub-tab-btn:nth-child(1)').classList.add('active');
         document.getElementById('pendingView').classList.add('active');
     } else if (view === 'approved') {
-        document.querySelector('.sub-tab-btn:nth-child(2)').classList.add('active');
+        document.querySelector('#admin-pending-content .sub-tab-btn:nth-child(2)').classList.add('active');
         document.getElementById('approvedView').classList.add('active');
     } else if (view === 'rejected') {
-        document.querySelector('.sub-tab-btn:nth-child(3)').classList.add('active');
+        document.querySelector('#admin-pending-content .sub-tab-btn:nth-child(3)').classList.add('active');
         document.getElementById('rejectedView').classList.add('active');
     }
 };
 
-window.viewApplication = function(entityId) {
-    const entity = allEntities.find(e => e.id === entityId);
-    if (!entity) return;
-
-    showModal('Application Details', 
-        `Organization: ${entity.fullName}
-        Short Name: ${entity.name}
-        Sector: ${entity.sector}
-        Description: ${entity.description || 'N/A'}
-        Primary Duty: ${entity.duty || 'N/A'}
-        Location: ${entity.location || 'N/A'}
-        Applied: ${new Date(entity.appliedDate).toLocaleDateString()}`,
-        [{ label: 'Close', style: 'btn-secondary', onClick: () => {} }]
-    );
-};
-
 window.approveApplication = async function(entityId) {
-    const entity = allEntities.find(e => e.id === entityId);
+    const entity = allAdminEntities.find(e => e.id === entityId);
     if (!entity) return;
 
     showModal('Approve Application', `Approve ${entity.fullName}?`, [
@@ -241,6 +184,7 @@ window.approveApplication = async function(entityId) {
                 showModal('Success', `${entity.name} has been approved!`, [
                     { label: 'OK', style: 'btn-primary', onClick: () => location.reload() }
                 ]);
+                updateNotification();
             } catch (e) {
                 showModal('Error', 'Error approving application: ' + e.message, [
                     { label: 'Close', style: 'btn-danger', onClick: () => {} }
@@ -251,7 +195,7 @@ window.approveApplication = async function(entityId) {
 };
 
 window.rejectApplication = async function(entityId) {
-    const entity = allEntities.find(e => e.id === entityId);
+    const entity = allAdminEntities.find(e => e.id === entityId);
     if (!entity) return;
 
     showModal('Reject Application', `Reject ${entity.fullName}?`, [
@@ -265,6 +209,7 @@ window.rejectApplication = async function(entityId) {
                 showModal('Done', `${entity.name} application has been rejected.`, [
                     { label: 'OK', style: 'btn-primary', onClick: () => location.reload() }
                 ]);
+                updateNotification();
             } catch (e) {
                 showModal('Error', 'Error rejecting application: ' + e.message, [
                     { label: 'Close', style: 'btn-danger', onClick: () => {} }

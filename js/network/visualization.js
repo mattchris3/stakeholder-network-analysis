@@ -30,13 +30,67 @@ export function createD3Visualization(nodes, links) {
 
     svg.call(zoom);
 
+    const connectionCounts = {};
+    nodes.forEach(n => { connectionCounts[n.id] = 0; });
+    links.forEach(l => {
+        const src = l.source.id || l.source;
+        const tgt = l.target.id || l.target;
+        connectionCounts[src] = (connectionCounts[src] || 0) + 1;
+        connectionCounts[tgt] = (connectionCounts[tgt] || 0) + 1;
+    });
+
+    const viewMode = document.getElementById('viewMode').value;
+
+    let xForce, yForce;
+
+    if (viewMode === 'sector' || viewMode === 'funding') {
+        const groupKey = viewMode === 'sector' ? 'sector' : 'fundingType';
+        const groups = [...new Set(nodes.map(n => n[groupKey] || 'unknown'))];
+        const angleStep = (2 * Math.PI) / groups.length;
+        const orbitRadius = Math.min(width, height) * 0.36;
+
+        const groupCenters = {};
+        groups.forEach((group, i) => {
+            groupCenters[group] = {
+                x: width / 2 + orbitRadius * Math.cos(angleStep * i - Math.PI / 2),
+                y: height / 2 + orbitRadius * Math.sin(angleStep * i - Math.PI / 2)
+            };
+        });
+
+        xForce = d3.forceX(d => groupCenters[d[groupKey] || 'unknown'].x).strength(0.8);
+        yForce = d3.forceY(d => groupCenters[d[groupKey] || 'unknown'].y).strength(0.8);
+    } else {
+        xForce = d3.forceX(width / 2).strength(d => {
+            const c = connectionCounts[d.id] || 0;
+            if (c >= 13) return 0.75;
+            if (c >= 11) return 0.6;
+            if (c >= 9) return 0.45;
+            if (c >= 7) return 0.3;
+            if (c >= 5) return 0.18;
+            if (c >= 3) return 0.08;
+            return 0.02;
+        });
+        yForce = d3.forceY(height / 2).strength(d => {
+            const c = connectionCounts[d.id] || 0;
+            if (c >= 13) return 0.75;
+            if (c >= 11) return 0.6;
+            if (c >= 9) return 0.45;
+            if (c >= 7) return 0.3;
+            if (c >= 5) return 0.18;
+            if (c >= 3) return 0.08;
+            return 0.02;
+        });
+    }
+
+    const chargeStrength = (viewMode === 'sector' || viewMode === 'funding') ? -350 : -300;
+
     simulation = d3.forceSimulation(nodes)
-        .force('link', d3.forceLink(links).id(d => d.id).distance(200))
-        .force('charge', d3.forceManyBody().strength(-900))
+        .force('link', d3.forceLink(links).id(d => d.id).distance(viewMode === 'all' ? 400 : 250))
+        .force('charge', d3.forceManyBody().strength(chargeStrength))
         .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius(d => Math.sqrt(d.meetings) * 3 + 25))
-        .force('x', d3.forceX(width / 2).strength(0.15))
-        .force('y', d3.forceY(height / 2).strength(0.15));
+        .force('collision', d3.forceCollide().radius(d => Math.sqrt(d.meetings) * 2 + 15))
+        .force('x', xForce)
+        .force('y', yForce);
 
     const link = g.append('g')
         .selectAll('line')
@@ -53,7 +107,7 @@ export function createD3Visualization(nodes, links) {
         .data(nodes)
         .enter().append('circle')
         .attr('class', 'node')
-        .attr('r', d => Math.sqrt(d.meetings) * 3 + 12)
+        .attr('r', d => Math.sqrt(d.meetings) * 2 + 12)
         .attr('fill', d => getSectorColor(d.sector))
         .attr('opacity', d => d.meetings === 0 ? 0.8 : 1)
         .call(drag(simulation));
@@ -106,7 +160,7 @@ export function createD3Visualization(nodes, links) {
         });
 
     simulation.on('tick', () => {
-        const padding = 50;
+        const padding = 20;
         const w = container.clientWidth;
         const h = container.clientHeight;
         
@@ -134,9 +188,14 @@ function getSectorColor(sector) {
         'education': '#2196F3',
         'government': '#FF9800',
         'nonprofit': '#E91E63',
-        'business': '#9C27B0'
+        'business': '#9C27B0',
+        'technology': '#00BCD4',
+        'banking': '#3F51B5',
+        'legal': '#FF5722',
+        'energy': '#8BC34A',
+        'agriculture': '#FFC107'
     };
-    return sectorColors[sector] || '#00BCD4';
+    return sectorColors[sector] || '#607D8B';
 }
 
 function drag(simulation) {

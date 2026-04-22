@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network Dashboard</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%232c5aa0'/></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%230a1628'/></svg>">
     
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,6 +32,17 @@
             </a>
             <a href="#" id="adminTabNav" style="display: none;" onclick="showAdminView()">
                 <i class="fas fa-user-shield"></i> Admin
+                <span id="adminNotification" style="display:none; background:#f44336; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:4px;">0</span>
+            </a>
+            <a href="#" id="meetingsTabNav" style="display: none;" onclick="showMeetingsView()">
+                <i class="fas fa-calendar-alt"></i> Meetings
+                <span id="meetingNotification" style="display:none; background:#f44336; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:4px;">0</span>
+            </a>
+            <a href="#" id="analyticsTabNav" style="display: none;" onclick="showAnalyticsView()">
+                <i class="fas fa-chart-bar"></i> Analytics
+            </a>
+            <a href="#" id="profileTabNav" style="display: none;" onclick="showProfileView()">
+                <i class="fas fa-id-card"></i> Profile
             </a>
             <div class="user-info" id="userInfoDisplay" style="display: none;">
                 <i class="fas fa-building"></i>
@@ -43,7 +54,14 @@
         </div>
     </div>
 
-    <div id="networkView" class="container">
+    <div id="appLoading" style="position:fixed; inset:0; background:linear-gradient(135deg, #0a1628 0%, #111d35 100%); display:flex; align-items:center; justify-content:center; z-index:9998;">
+        <div style="text-align:center; color:white;">
+            <div style="border:4px solid rgba(255,255,255,0.3); border-top:4px solid white; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; margin:0 auto 20px;"></div>
+            <p style="font-size:16px; opacity:0.9;">Loading...</p>
+        </div>
+    </div>
+
+    <div id="networkView" class="container" style="display: none;">
         <div class="main-content">
             <div class="stats-container">
                 <div class="stat-card blue">
@@ -71,9 +89,15 @@
             <div class="controls">
                 <div class="controls-header">
                     <h3><i class="fas fa-sliders-h"></i> Controls & Filters</h3>
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Search organizations...">
-                        <i class="fas fa-search"></i>
+                    <div style="display:flex; gap:8px; margin-left:auto;">
+                        <div class="search-box" style="flex:1;">
+                            <input type="text" id="searchOrgA" placeholder="Search organization...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="search-box" style="flex:1;">
+                            <input type="text" id="searchOrgB" placeholder="Search partner...">
+                            <i class="fas fa-search"></i>
+                        </div>
                     </div>
                 </div>
                 <div class="controls-row">
@@ -81,8 +105,8 @@
                         <label>View Mode</label>
                         <select id="viewMode">
                             <option value="all">All Entities</option>
-                            <option value="active">Active Only (5+ meetings)</option>
-                            <option value="top">Top 10 Collaborators</option>
+                            <option value="sector">Cluster by Sector</option>
+                            <option value="funding">Cluster by Funding Type</option>
                         </select>
                     </div>
                     <div class="control-group">
@@ -94,24 +118,30 @@
                             <option value="government">Government</option>
                             <option value="nonprofit">Non-Profit</option>
                             <option value="business">Business</option>
+                            <option value="technology">Technology</option>
+                            <option value="banking">Banking</option>
+                            <option value="legal">Legal</option>
+                            <option value="energy">Energy</option>
+                            <option value="agriculture">Agriculture</option>
                         </select>
                     </div>
                     <div class="control-group">
                         <label>Connection Strength</label>
                         <select id="connectionStrength">
                             <option value="all">All Connections</option>
-                            <option value="strong">Strong (3+ meetings)</option>
-                            <option value="medium">Medium (2 meetings)</option>
-                            <option value="weak">Weak (1 meeting)</option>
+                            <option value="strong">Strong (6+ meetings)</option>
+                            <option value="medium">Medium (3-5 meetings)</option>
+                            <option value="weak">Weak (1-2 meetings)</option>
                         </select>
                     </div>
                     <div class="control-group">
                         <label>Time Period</label>
                         <select id="timePeriod">
                             <option value="all">All Time</option>
+                            <option value="1">Last Month</option>
                             <option value="3">Last 3 Months</option>
                             <option value="6">Last 6 Months</option>
-                            <option value="9">Last 9 Months</option>
+                            <option value="12">Last 12 Months</option>
                         </select>
                     </div>
                     <div class="control-group">
@@ -207,10 +237,11 @@
                 <a href="#" class="nav-item" data-tab="admin-pending">
                     <i class="fas fa-clock"></i>
                     <span>Approvals</span>
+                    <span id="approvalsBadge" style="display:none; background:#f44336; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:auto;">0</span>
                 </a>
-                <a href="#" class="nav-item" data-tab="admin-settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
+                <a href="#" class="nav-item" data-tab="admin-profile">
+                    <i class="fas fa-building"></i>
+                    <span>Unity Profile</span>
                 </a>
             </nav>
         </aside>
@@ -225,22 +256,19 @@
             </div>
 
             <div class="tab-content active" id="admin-overview-content">
-                <div class="button-grid">
-                    <button class="view-btn active" data-view="overview">
-                        <i class="fas fa-chart-pie"></i>
-                        <span>Overview</span>
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" onclick="switchOverviewView('overview')">
+                        <i class="fas fa-chart-pie"></i> Overview
                     </button>
-                    <button class="view-btn" data-view="organizations">
-                        <i class="fas fa-building"></i>
-                        <span>Organizations</span>
+                    <button class="sub-tab-btn" onclick="switchOverviewView('organizations')">
+                        <i class="fas fa-building"></i> Organizations
                     </button>
-                    <button class="view-btn" data-view="meetings">
-                        <i class="fas fa-calendar"></i>
-                        <span>Meetings</span>
+                    <button class="sub-tab-btn" onclick="switchOverviewView('meetings')">
+                        <i class="fas fa-calendar"></i> Meetings
                     </button>
                 </div>
 
-                <div class="chart-section">
+                <div class="chart-section sub-tab-content active">
                     <h3>Organizations by Sector</h3>
                     <div class="chart-container">
                         <canvas id="sectorChart"></canvas>
@@ -248,10 +276,14 @@
                     </div>
                 </div>
 
-                <div class="organizations-section" style="display: none;">
+                <div class="organizations-section sub-tab-content">
                     <div id="organizationsTableContainer">
                         <h3>Organizations</h3>
                         <table>
+                            <div id="noOrganizationsMessage" style="display:none; text-align:center; padding:40px; color:#5a6478;">
+                                <i class="fas fa-building" style="font-size:48px; color:#dde3ee; margin-bottom:16px;"></i>
+                                <p>No organizations yet. Members will appear here once approved.</p>
+                            </div>
                             <thead>
                                 <tr>
                                     <th>Organization</th>
@@ -263,18 +295,16 @@
                             <tbody id="organizationsTable"></tbody>
                         </table>
                     </div>
-                    <div id="organizationDetail" style="display: none;">
-                        <button onclick="backToOrganizationsTable()" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </button>
-                        <div id="organizationDetailContent"></div>
-                    </div>
                 </div>
 
-                <div class="meetings-section" style="display: none;">
+                <div class="meetings-section sub-tab-content">
                     <div id="meetingsTableContainer">
                         <h3>Meetings</h3>
                         <table>
+                            <div id="noMeetingsViewMessage" style="display:none; text-align:center; padding:40px; color:#5a6478;">
+                                <i class="fas fa-calendar" style="font-size:48px; color:#dde3ee; margin-bottom:16px;"></i>
+                                <p>No confirmed meetings yet. Meetings will appear here once all participants have verified.</p>
+                            </div>
                             <thead>
                                 <tr>
                                     <th>Title</th>
@@ -295,9 +325,46 @@
             </div>
 
             <div class="tab-content" id="admin-modify-content">
-                <div id="modifyTablesView">
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" onclick="switchModifyView('members')">
+                        <i class="fas fa-users"></i> Members
+                        <span id="membersCount">0</span>
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchModifyView('removed')">
+                        <i class="fas fa-user-slash"></i> Removed
+                        <span id="removedCount">0</span>
+                    </button>
+                </div>
+
+                <div id="membersView" class="sub-tab-content active">
                     <div class="admin-modify-section">
                         <h3>Members</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <div id="noMembersMessage" style="display:none; text-align:center; padding:40px; color:#5a6478;">
+                                    <i class="fas fa-users" style="font-size:48px; color:#dde3ee; margin-bottom:16px;"></i>
+                                    <p>No approved members yet. Approve pending applications to see them here.</p>
+                                </div>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Full Name</th>
+                                        <th>Sector</th>
+                                        <th>Status</th>
+                                        <th>Location</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modifyEntitiesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="removedView" class="sub-tab-content">
+                    <div class="admin-modify-section">
+                        <h3>Removed Members</h3>
                         <div class="table-container">
                             <table class="data-table">
                                 <thead>
@@ -306,13 +373,16 @@
                                         <th>Name</th>
                                         <th>Full Name</th>
                                         <th>Sector</th>
-                                        <th>Status</th>                                        
-                                        <th>Location</th>
-                                        <th>Details</th>
+                                        <th>Removed Date</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="modifyEntitiesTable"></tbody>
+                                <tbody id="removedEntitiesTable"></tbody>
                             </table>
+                            <div id="noRemovedMessage" style="display:none; text-align:center; padding:40px; color:#5a6478;">
+                                <i class="fas fa-user-shield" style="font-size:48px; color:#dde3ee; margin-bottom:16px;"></i>
+                                <p>No removed members</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -401,97 +471,386 @@
                 </div>
             </div>
 
-            <div class="tab-content" id="admin-settings-content">
-                <div class="settings-section">
-                    <h3>Change Password</h3>
-                    <form id="passwordForm" class="settings-form">
-                        <div class="form-group">
-                            <label>Current Password</label>
-                            <input type="password" id="currentPassword" required>
-                        </div>
-                        <div class="form-group">
-                            <label>New Password</label>
-                            <input type="password" id="newPassword" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Confirm New Password</label>
-                            <input type="password" id="confirmPassword" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Update Password
-                        </button>
-                    </form>
+            <div class="tab-content" id="admin-profile-content">
+                <div style="padding:30px;">
+                    <h3 style="color:#1e3c72; margin-bottom:24px;">Unity Profile</h3>
+                    <div id="unityProfileContent"></div>
                 </div>
             </div>
+        </main>
+    </div>
+    <div id="meetingsView" class="admin-container" style="display: none;">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-calendar-alt"></i>
+                <h2>Meetings</h2>
+            </div>
             
-            <div id="customModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
-                <div style="background:white; border-radius:12px; padding:30px; max-width:480px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.2);">
-                    <h3 id="modalTitle" style="color:#1e3c72; margin-bottom:12px;"></h3>
-                    <p id="modalMessage" style="color:#555; margin-bottom:24px; white-space:pre-line;"></p>
-                    <div id="modalButtons" style="display:flex; gap:10px; justify-content:flex-end;"></div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="meetings-add">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Log Meeting</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="meetings-manage">
+                    <i class="fas fa-tasks"></i>
+                    <span>Manage</span>
+                    <span id="manageBadge" style="display:none; background:#f44336; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:auto;">0</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="meetings-overview">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Overview</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <h1 id="meetingsPageTitle">Log Meeting</h1>
+                <div class="user-info">
+                    <i class="fas fa-building"></i>
+                    <span id="meetingsOrgName">Organization</span>
+                </div>
+            </div>
+
+            <div class="tab-content active" id="meetings-add-content">
+                <div class="modify-section">
+                    <h3>Log a New Meeting</h3>
+                    <p style="color: #888; margin-bottom: 20px; font-size: 14px;">
+                        Only log meetings that have already taken place. All participants will be asked to verify.
+                    </p>
+                    <div class="form-group">
+                        <label>Meeting Type *</label>
+                        <select id="meetingType">
+                            <option value="">Select type...</option>
+                            <option value="strategy">Strategy</option>
+                            <option value="coordination">Coordination</option>
+                            <option value="training">Training</option>
+                            <option value="research">Research</option>
+                            <option value="funding">Funding</option>
+                            <option value="emergency">Emergency</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Format *</label>
+                        <select id="meetingFormat">
+                            <option value="">Select format...</option>
+                            <option value="in-person">In-Person</option>
+                            <option value="virtual">Virtual</option>
+                            <option value="hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Meeting Location *</label>
+                        <input type="text" id="meetingLocation" placeholder="e.g. Geneva, Switzerland or Virtual">
+                    </div>
+                    <div class="form-group">
+                        <label>Meeting Title *</label>
+                        <input type="text" id="meetingTitle" placeholder="e.g. Quarterly Health Review">
+                    </div>
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="meetingDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Purpose *</label>
+                        <textarea id="meetingPurpose" rows="3" placeholder="What was the purpose of this meeting?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Outcome *</label>
+                        <textarea id="meetingOutcome" rows="3" placeholder="What was achieved or decided?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Participants *</label>
+                        <p style="font-size: 12px; color: #888; margin-bottom: 8px;">
+                            Select all organizations that attended. You are automatically included.
+                        </p>
+                        <div id="participantsList" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            <p style="color: #999;">Loading members...</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 24px; display: flex; gap: 12px;">
+                        <button class="btn btn-primary" onclick="submitMeeting()">
+                            <i class="fas fa-paper-plane"></i> Submit Meeting
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearMeetingForm()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="meetings-manage-content">
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" onclick="switchMeetingManageView('my-requests')">
+                        <i class="fas fa-paper-plane"></i> My Requests
+                        <span id="myRequestsCount">0</span>
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchMeetingManageView('verify')">
+                        <i class="fas fa-check-double"></i> Verify
+                        <span id="verifyBadge" style="display:none; background:#f44336; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:4px;">0</span>
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchMeetingManageView('disputed')">
+                        <i class="fas fa-times-circle"></i> Disputed
+                        <span id="disputedCount">0</span>
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchMeetingManageView('approved')">
+                        <i class="fas fa-check-circle"></i> Approved
+                        <span id="approvedMeetingsCount">0</span>
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchMeetingManageView('history')">
+                        <i class="fas fa-history"></i> History
+                        <span id="historyCount">0</span>
+                    </button>
+                </div>
+
+                <div id="my-requests-view" class="sub-tab-content active">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>Participants</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myRequestsTable"></tbody>
+                        </table>
+                        <div id="noMyRequestsMessage" style="display:none; text-align:center; padding:40px; color:#5a6478;">
+                            <i class="fas fa-paper-plane" style="font-size:48px; margin-bottom:20px;"></i>
+                            <p>No meetings logged yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="verify-view" class="sub-tab-content">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>Logged By</th>
+                                    <th>Your Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="verifyTable"></tbody>
+                        </table>
+                        <div id="noVerifyMessage" style="display:none; text-align:center; padding:40px; color:#5a6478;">
+                            <i class="fas fa-check-circle" style="font-size:48px; color:#5a7a6b; margin-bottom:20px;"></i>
+                            <p>No meetings awaiting your verification</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="disputed-view" class="sub-tab-content">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>Logged By</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="disputedTable"></tbody>
+                        </table>
+                        <div id="noDisputedMessage" style="display:none; text-align:center; padding:40px; color:#5a6478;">
+                            <i class="fas fa-check-circle" style="font-size:48px; color:#5a7a6b; margin-bottom:20px;"></i>
+                            <p>No disputed meetings</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="approved-meetings-view" class="sub-tab-content">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>Logged By</th>
+                                    <th>Pending Approvals</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="approvedMeetingsTable"></tbody>
+                        </table>
+                        <div id="noApprovedMeetingsMessage" style="display:none; text-align:center; padding:40px; color:#5a6478;">
+                            <i class="fas fa-inbox" style="font-size:48px; margin-bottom:20px;"></i>
+                            <p>No approved meetings yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="history-view" class="sub-tab-content">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>Participants</th>
+                                    <th>Status</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTable"></tbody>
+                        </table>
+                        <div id="noHistoryMessage" style="display:none; text-align:center; padding:40px; color:#5a6478;">
+                            <i class="fas fa-history" style="font-size:48px; margin-bottom:20px;"></i>
+                            <p>No meeting history yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="meetings-overview-content">
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="stat-number" id="confirmedMeetingsCount">0</div>
+                        <div class="stat-label">Confirmed Meetings</div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-number" id="pendingMeetingsCount">0</div>
+                        <div class="stat-label">Pending Verification</div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-users"></i>
+                        <div class="stat-number" id="uniqueCollaboratorsCount">0</div>
+                        <div class="stat-label">Unique Collaborators</div>
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <h3>My Meeting History</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Participants</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overviewMeetingsTable"></tbody>
+                    </table>
                 </div>
             </div>
         </main>
     </div>
 
-    <script type="module" src="js/network/main.js"></script>
-    <script type="module" src="js/admin/main.js"></script>
-    
-    <script>
-        function showNetworkView() {
-            document.getElementById('networkView').style.display = 'flex';
-            document.getElementById('adminView').style.display = 'none';
-            document.querySelector('.navbar-menu a[onclick="showNetworkView()"]').classList.add('active');
-            const adminNav = document.querySelector('.navbar-menu a[onclick="showAdminView()"]');
-            if (adminNav) adminNav.classList.remove('active');
+    <div id="analyticsView" class="admin-container" style="display: none;">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Analytics</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="analytics-overview">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="analytics-influence">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Influence</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="analytics-activity">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Activity</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="analytics-insights">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Network Insights</span>
+                </a>
+            </nav>
+        </aside>
 
-            sessionStorage.setItem('currentView', 'network');
-        }
+        <main class="main-content">
+            <div class="content-header">
+                <h1 id="analyticsPageTitle"></h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="analyticsUserDisplay">Admin</span>
+                </div>
+            </div>
+            <div class="tab-content active" id="analytics-overview-content">
+            </div>
 
-        function showAdminView() {
-            document.getElementById('networkView').style.display = 'none';
-            document.getElementById('adminView').style.display = 'flex';
-            document.querySelector('.navbar-menu a[onclick="showNetworkView()"]').classList.remove('active');
-            document.querySelector('.navbar-menu a[onclick="showAdminView()"]').classList.add('active');
+            <div class="tab-content" id="analytics-influence-content">
+            </div>
 
-            sessionStorage.setItem('currentView', 'admin')
-        }
+            <div class="tab-content" id="analytics-activity-content">
+            </div>
+            <div class="tab-content" id="analytics-insights-content">
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" onclick="switchInsightsView('dependency')">
+                        <i class="fas fa-fingerprint"></i> Contribution
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchInsightsView('bridges')">
+                        <i class="fas fa-bridge"></i> Sector Bridges
+                    </button>
+                    <button class="sub-tab-btn" onclick="switchInsightsView('gaps')">
+                        <i class="fas fa-unlink"></i> Collaboration Gaps
+                    </button>
+                </div>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const unityId = sessionStorage.getItem('unityId');
-            const userRole = sessionStorage.getItem('userRole');
-            
-            if (!unityId) {
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            if (userRole === 'admin') {
-                const adminNav = document.getElementById('adminTabNav');
-                if (adminNav) adminNav.style.display = 'flex';
+                <div id="dependency-view" class="sub-tab-content active"></div>
+                <div id="bridges-view" class="sub-tab-content"></div>
+                <div id="gaps-view" class="sub-tab-content"></div>
+            </div>
+        </main>
+    </div>
+
+    <div id="profileView" class="admin-container" style="display: none;">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-id-card"></i>
+                <h2>Profile</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="profile-details">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="profile-unity">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Unity Info</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <h1 id="profilePageTitle">My Profile</h1>
+                <div class="user-info">
+                    <i class="fas fa-building"></i>
+                    <span id="profileOrgName">Organization</span>
+                </div>
+            </div>
+
+            <div class="tab-content active" id="profile-details-content">
+            </div>
+
+            <div class="tab-content" id="profile-unity-content">
+            </div>
+        </main>
+    </div>
                 
-                const username = sessionStorage.getItem('username');
-                if (username) {
-                    document.getElementById('adminUsername').textContent = username;
-                }
-            } else if (userRole === 'member') {
-                const userInfo = document.getElementById('userInfoDisplay');
-                if (userInfo) userInfo.style.display = 'flex';
-                
-                const orgName = sessionStorage.getItem('orgName');
-                if (orgName) {
-                    document.getElementById('userDisplayName').textContent = orgName;
-                }
-            }
-            
-            const currentView = sessionStorage.getItem('currentView');
-            if(currentView === 'admin' && userRole === 'admin'){
-                showAdminView();
-            }
-            else {
-                showNetworkView();
-            }
-        });
-    </script>
+    <div id="customModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:white; border-radius:12px; padding:30px; max-width:480px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.2); max-height:85vh; display:flex; flex-direction:column;">
+            <h3 id="modalTitle" style="color:#111d35; margin-bottom:12px; flex-shrink:0;"></h3>
+            <p id="modalMessage" style="color:#555; margin-bottom:24px; white-space:pre-line; overflow-y:auto; flex:1;"></p>
+            <div id="modalButtons" style="display:flex; gap:10px; justify-content:flex-end; flex-shrink:0;"></div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

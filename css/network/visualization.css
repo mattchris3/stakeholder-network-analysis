@@ -1,7 +1,7 @@
 #network {
     width: 100%;
-    height: calc(100vh - 420px);
-    min-height: 400px;
+    height: calc(100vh - 350px);
+    min-height: 500px;
     background: rgba(255,255,255,0.95);
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.1);
@@ -17,7 +17,7 @@
 }
 
 .node:hover {
-    stroke: #2c5aa0;
+    stroke: #1a3a5c;
     stroke-width: 4px;
 }
 
@@ -26,7 +26,7 @@
 }
 
 .node.highlighted {
-    stroke: #2c5aa0;
+    stroke: #1a3a5c;
     stroke-width: 5px;
 }
 
@@ -79,7 +79,7 @@
 .tooltip {
     position: absolute;
     padding: 15px;
-    background: linear-gradient(135deg, rgba(30, 60, 114, 0.95) 0%, rgba(44, 90, 160, 0.95) 100%);
+    background: rgba(75, 80, 90, 0.93);
     color: white;
     border-radius: 8px;
     pointer-events: none;
@@ -87,5 +87,5 @@
     display: none;
     z-index: 1000;
     max-width: 300px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }

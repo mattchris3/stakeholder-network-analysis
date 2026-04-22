@@ -28,14 +28,14 @@
 }
 
 .sub-tab-btn:hover {
-    color: #2c5aa0;
-    background: rgba(44, 90, 160, 0.05);
+    color: #1a3a5c;
+    background: rgba(26, 58, 92, 0.05);
 }
 
 .sub-tab-btn.active {
-    color: #2c5aa0;
-    border-bottom-color: #2c5aa0;
-    background: rgba(44, 90, 160, 0.1);
+    color: #1a3a5c;
+    border-bottom-color: #1a3a5c;
+    background: rgba(26, 58, 92, 0.1);
 }
 
 .sub-tab-content {
@@ -108,12 +108,12 @@
 }
 
 .btn-primary {
-    background: #2c5aa0;
+    background: #1a3a5c;
     color: white;
 }
 
 .btn-primary:hover {
-    background: #234a87;
+    background: #111d35;
 }
 
 .btn-success {
@@ -163,13 +163,38 @@
     color: #c2185b;
 }
 
+.badge-technology {
+    background: #e0f2f1;
+    color: #00695c;
+}
+
+.badge-banking {
+    background: #e8eaf6;
+    color: #283593;
+}
+
+.badge-legal {
+    background: #fbe9e7;
+    color: #bf360c;
+}
+
+.badge-energy {
+    background: #f1f8e9;
+    color: #33691e;
+}
+
+.badge-agriculture {
+    background: #fff8e1;
+    color: #f57f17;
+}
+
 .badge-business {
     background: #f3e5f5;
     color: #7b1fa2;
 }
 
 .data-table thead {
-    background: #2c5aa0;
+    background: #1a3a5c;
 }
 
 .data-table th {
@@ -177,5 +202,5 @@
     text-align: left;
     font-weight: 600;
     color: #ffffff;
-    border-bottom: 2px solid #234a87;
+    border-bottom: 2px solid #111d35;
 }

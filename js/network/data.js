@@ -8,7 +8,8 @@ export let allLinks = [];
 export let currentNodes = [];
 export let currentLinks = [];
 export let currentPeriodNodes = [];
-let allMeetings = [];
+export let allMeetings = [];
+export let allRelationships = [];
 
 export async function loadVisualization() {
     try {
@@ -27,21 +28,33 @@ export async function loadVisualization() {
         const meetingsSnapshot = await get(meetingsRef);
 
         if (!entitiesSnapshot.exists()) {
-            alert('No entities found in database');
+            console.warn('No entities found in database');
             document.querySelector('.loading').style.display = 'none';
             return;
         }
 
         const allEntities = entitiesSnapshot.val();
         const entities = Object.values(allEntities).filter(entity => 
-            entity && entity.unityId === currentUnityId && entity.status === 'active'
+            entity && entity.unityId === currentUnityId && entity.status === 'active' && entity.approval === 'approved'
         );
+
+        if (entities.length === 0) {
+            document.querySelector('.loading').style.display = 'none';
+            document.getElementById('network').innerHTML = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#5a6478; text-align:center; padding:40px;">
+                    <i class="fas fa-network-wired" style="font-size:64px; color:#dde3ee; margin-bottom:24px;"></i>
+                    <h3 style="color:#111d35; margin-bottom:12px;">Your Network is Empty</h3>
+                    <p style="max-width:400px; line-height:1.6;">No active members yet. Share your Unity access code with organizations you want to collaborate with to get started.</p>
+                </div>
+            `;
+            return;
+        }
 
         let meetings = [];
         if (meetingsSnapshot.exists()) {
             const allMeetings = meetingsSnapshot.val();
             meetings = Object.values(allMeetings).filter(meeting => 
-                meeting && meeting.unityId === currentUnityId
+                meeting && meeting.status === 'confirmed' && meeting.unityId === currentUnityId
             );
         }
         allMeetings = meetings;
@@ -52,7 +65,7 @@ export async function loadVisualization() {
         applyFilters();
 
     } catch (error) {
-        alert('Error loading data: ' + error.message);
+        console.error('Error loading data:', error.message);
         console.error(error);
         document.querySelector('.loading').style.display = 'none';
     }
@@ -104,6 +117,8 @@ function processNetworkData(entities, meetings) {
         fullName: entity.fullName || entity.name,
         meetings: meetingCounts[entity.id] || 0,
         sector: entity.sector || 'unknown',
+        fundingType: entity.fundingType || 'unknown',
+        focusAreas: entity.focusAreas || [],
         status: entity.status || 'active',
         description: entity.description || '',
         duty: entity.duty || ''
@@ -119,21 +134,54 @@ export function applyFilters() {
     const viewMode = document.getElementById('viewMode').value;
     const sector = document.getElementById('filterSector').value;
     const strength = document.getElementById('connectionStrength').value;
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
-    currentNodes = [...allNodes];
+    currentNodes = allNodes.map(n => ({ ...n }));
 
-    if (searchTerm) {
-        currentNodes = currentNodes.filter(node => 
-            node.name.toLowerCase().includes(searchTerm) ||
-            node.fullName.toLowerCase().includes(searchTerm)
-        );
-    }
+    const searchOrgA = document.getElementById('searchOrgA').value.toLowerCase().trim();
+    const searchOrgB = document.getElementById('searchOrgB').value.toLowerCase().trim();
 
-    if (viewMode === 'active') {
-        currentNodes = currentNodes.filter(node => node.meetings >= 5);
-    } else if (viewMode === 'top') {
-        currentNodes = currentNodes.sort((a, b) => b.meetings - a.meetings).slice(0, 10);
+    if (searchOrgA || searchOrgB) {
+        const matchA = searchOrgA
+            ? currentNodes.filter(n =>
+                n.name.toLowerCase().includes(searchOrgA) ||
+                n.fullName.toLowerCase().includes(searchOrgA)
+            ).map(n => n.id)
+            : null;
+
+        const matchB = searchOrgB
+            ? currentNodes.filter(n =>
+                n.name.toLowerCase().includes(searchOrgB) ||
+                n.fullName.toLowerCase().includes(searchOrgB)
+            ).map(n => n.id)
+            : null;
+
+        if (matchA && matchB) {
+            currentLinks = currentLinks.filter(link => {
+                const src = link.source.id || link.source;
+                const tgt = link.target.id || link.target;
+                return (matchA.some(id => id === src || id === tgt) &&
+                        matchB.some(id => id === src || id === tgt));
+            });
+        } else if (matchA) {
+            currentLinks = currentLinks.filter(link => {
+                const src = link.source.id || link.source;
+                const tgt = link.target.id || link.target;
+                return matchA.some(id => id === src || id === tgt);
+            });
+        } else if (matchB) {
+            currentLinks = currentLinks.filter(link => {
+                const src = link.source.id || link.source;
+                const tgt = link.target.id || link.target;
+                return matchB.some(id => id === src || id === tgt);
+            });
+        }
+
+        const linkedIds = new Set();
+        currentLinks.forEach(link => {
+            linkedIds.add(link.source.id || link.source);
+            linkedIds.add(link.target.id || link.target);
+        });
+        currentNodes = currentNodes.filter(n => linkedIds.has(n.id));
     }
 
     if (sector !== 'all') {
@@ -149,22 +197,22 @@ export function applyFilters() {
             nodeIds.has(link.target || link.target.id)
         );
 
-    if (strength === 'strong') {
-        currentLinks = currentLinks.filter(link => link.value >= 3);
-    } else if (strength === 'medium') {
-        currentLinks = currentLinks.filter(link => link.value === 2);
-    } else if (strength === 'weak') {
-        currentLinks = currentLinks.filter(link => link.value === 1);
-    }
-
     const showIsolated = document.getElementById('showIsolatedNodes')?.checked !== false;
-    if (!showIsolated) {
+
+    if (strength === 'strong') {
+        currentLinks = currentLinks.filter(link => link.value >= 6);
+    } else if (strength === 'medium') {
+        currentLinks = currentLinks.filter(link => link.value >= 3 && link.value <= 5);
+    } else if (strength === 'weak') {
+        currentLinks = currentLinks.filter(link => link.value >= 1 && link.value <= 2);
+    }
+    
+    if (!showIsolated || strength !== 'all') {
         const connectedIds = new Set();
         currentLinks.forEach(link => {
             connectedIds.add(link.source.id || link.source);
             connectedIds.add(link.target.id || link.target);
         });
-        
         currentNodes = currentNodes.filter(node => connectedIds.has(node.id));
     }
 
@@ -173,12 +221,14 @@ export function applyFilters() {
         const now = new Date();
         let cutoff;
 
-        if (timePeriod === '3') {
+        if (timePeriod === '1') {
+            cutoff = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        } else if (timePeriod === '3') {
             cutoff = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
         } else if (timePeriod === '6') {
             cutoff = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
-        } else if (timePeriod === '9') {
-            cutoff = new Date(now.getFullYear(), now.getMonth() - 9, now.getDate());
+        } else if (timePeriod === '12') {
+            cutoff = new Date(now.getFullYear(), now.getMonth() - 12, now.getDate());
         }
 
         currentLinks = currentLinks.map(link => {
@@ -220,5 +270,7 @@ export function clearFilters() {
     document.getElementById('connectionStrength').value = 'all';
     document.getElementById('timePeriod').value = 'all';
     document.getElementById('searchInput').value = '';
+    document.getElementById('searchOrgA').value = '';
+    document.getElementById('searchOrgB').value = '';
     applyFilters();
 }

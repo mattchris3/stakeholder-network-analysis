@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Member Registration - Organization Network</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/welcome-existing-new.css">
+    <link rel="stylesheet" href="css/welcome.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container" style="max-width:900px;">
         <div class="survey-card">
             <div class="card-header">
                 <i class="fas fa-user-plus"></i>
@@ -71,6 +71,29 @@
                     </div>
 
                     <div class="form-group">
+                        <label>
+                            <i class="fas fa-tags"></i>
+                            Focus Areas *
+                        </label>
+                        <div id="focusAreaOptions" style="display:flex; flex-wrap:wrap; gap:8px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fundingType">
+                            <i class="fas fa-hand-holding-usd"></i>
+                            Funding Type *
+                        </label>
+                        <select id="fundingType" required>
+                            <option value="">Select funding type...</option>
+                            <option value="donor">Donor</option>
+                            <option value="implementer">Implementer</option>
+                            <option value="both">Both</option>
+                            <option value="research">Research</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label for="sector">
                             <i class="fas fa-briefcase"></i>
                             Sector *
@@ -82,6 +105,11 @@
                             <option value="government">Government</option>
                             <option value="nonprofit">Non-Profit</option>
                             <option value="business">Business</option>
+                            <option value="technology">Technology</option>
+                            <option value="banking">Banking</option>
+                            <option value="legal">Legal</option>
+                            <option value="energy">Energy</option>
+                            <option value="agriculture">Agriculture</option>
                         </select>
                     </div>
 
@@ -109,8 +137,50 @@
                         <input type="text" id="location" placeholder="City, Country">
                     </div>
 
+                    <div class="form-group">
+                        <label for="orgType">
+                            <i class="fas fa-building"></i>
+                            Organization Type *
+                        </label>
+                        <select id="orgType" required>
+                            <option value="">Select type...</option>
+                            <option value="un-agency">UN Agency</option>
+                            <option value="ngo">NGO</option>
+                            <option value="government">Government</option>
+                            <option value="academic">Academic</option>
+                            <option value="private-foundation">Private Foundation</option>
+                            <option value="intergovernmental">Intergovernmental</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orgSize">
+                            <i class="fas fa-chart-bar"></i>
+                            Organization Size *
+                        </label>
+                        <select id="orgSize" required>
+                            <option value="">Select size...</option>
+                            <option value="small">Small</option>
+                            <option value="medium">Medium</option>
+                            <option value="large">Large</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orgRegion">
+                            <i class="fas fa-globe"></i>
+                            Region of Operation *
+                        </label>
+                        <select id="orgRegion" required>
+                            <option value="">Select region...</option>
+                            <option value="global">Global</option>
+                            <option value="regional">Regional</option>
+                            <option value="national">National</option>
+                        </select>
+                    </div>
+
                     <div class="button-group">
-                        <button type="button" class="back-btn" onclick="step1()">
+                        <button type="button" class="back-btn" onclick="location.reload()">
                             <i class="fas fa-arrow-left"></i>
                             Back
                         </button>
