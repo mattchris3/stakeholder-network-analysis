@@ -269,7 +269,6 @@ export function clearFilters() {
     document.getElementById('filterSector').value = 'all';
     document.getElementById('connectionStrength').value = 'all';
     document.getElementById('timePeriod').value = 'all';
-    document.getElementById('searchInput').value = '';
     document.getElementById('searchOrgA').value = '';
     document.getElementById('searchOrgB').value = '';
     applyFilters();
