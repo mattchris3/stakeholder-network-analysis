@@ -71,6 +71,7 @@ export async function loadVisualization() {
     }
 }
 
+// Build node and link arrays from raw Firebase data
 function processNetworkData(entities, meetings) {
     const validEntityIds = new Set(entities.map(e => e.id));
 
@@ -130,6 +131,7 @@ function processNetworkData(entities, meetings) {
     updateSidebarTopEntities();
 }
 
+// Filter pipeline: runs from fresh allNodes/allLinks on every filter change
 export function applyFilters() {
     const viewMode = document.getElementById('viewMode').value;
     const sector = document.getElementById('filterSector').value;

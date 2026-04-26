@@ -54,6 +54,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (role === 'admin') {
         document.getElementById('adminTabNav').style.display = 'flex';
         document.getElementById('analyticsTabNav').style.display = 'flex';
+        const overviewNav = document.querySelector('#analyticsView .nav-item[data-tab="analytics-overview"]');
+        if (overviewNav) overviewNav.style.display = 'none';
         const username = sessionStorage.getItem('username');
         if (username) document.getElementById('adminUsername').textContent = username;
     } else if (role === 'member') {
@@ -81,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('appLoading').style.display = 'none';
 });
 
+// Load all data from Firebase once and share via exports
 export async function loadData() {
     currentUnityId = sessionStorage.getItem('unityId');
     currentOrgId = sessionStorage.getItem('orgId');
@@ -108,6 +111,7 @@ export async function loadData() {
     }
 }
 
+// Navigation: show/hide views and persist state
 export function showNetworkView() {
     hideAllViews();
     document.getElementById('networkView').style.display = 'flex';
@@ -144,7 +148,7 @@ export function showAnalyticsView() {
     setActiveNav('showAnalyticsView');
     sessionStorage.setItem('currentView', 'analytics');
     initAnalyticsNavigation();
-    const savedTab = sessionStorage.getItem('analyticsTab') || 'analytics-overview';
+    const savedTab = sessionStorage.getItem('analyticsTab') || (userRole === 'admin' ? 'analytics-influence' : 'analytics-overview');
     switchAnalyticsTab(savedTab);
 }
 
@@ -253,7 +257,7 @@ function switchAnalyticsTab(tab) {
     };
     document.getElementById('analyticsPageTitle').textContent = titles[tab];
 
-    if (tab === 'analytics-overview') displayAnalyticsOverview();
+    if (tab === 'analytics-overview' && userRole !== 'admin') displayAnalyticsOverview();
     if (tab === 'analytics-influence') displayInfluence();
     if (tab === 'analytics-activity') displayActivity();
     if (tab === 'analytics-insights') displayInsights();
@@ -318,6 +322,7 @@ export function statusBadge(status) {
     return `<span style="background:${s.bg}; color:white; padding:3px 10px; border-radius:12px; font-size:12px;">${s.label}</span>`;
 }
 
+// Notification badges for pending actions
 export function updateNotification() {
     if (userRole === 'member') {
         const pendingCount = allMeetings.filter(m =>
@@ -361,6 +366,7 @@ export function updateNotification() {
     }
 }
 
+// Centralised entity and meeting detail modals used across all sections
 window.viewEntityDetail = function(entityId) {
     const entity = allAdminEntities.find(e => e.id === entityId) 
         || allEntities.find(e => e.id === entityId);

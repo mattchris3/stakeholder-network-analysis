@@ -35,6 +35,7 @@ function getEntity(id) {
     return allEntities.find(e => e.id === id);
 }
 
+// Simulate removing each org to measure network impact
 function renderDependency() {
     const container = document.getElementById('dependency-view');
     if (!container) return;
@@ -255,6 +256,7 @@ function renderDependency() {
     };
 }
 
+// Identify cross-sector and cross-focus connections that bridge domains
 function renderBridges() {
     const container = document.getElementById('bridges-view');
     if (!container) return;
@@ -419,6 +421,7 @@ function renderBridges() {
     };
 }
 
+// Find org pairs sharing focus areas but with no direct meetings
 function renderGaps() {
     const container = document.getElementById('gaps-view');
     if (!container) return;

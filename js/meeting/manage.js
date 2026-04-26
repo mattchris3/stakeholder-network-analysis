@@ -212,6 +212,7 @@ function renderHistory(meetings) {
     }).join('');
 }
 
+// Approvals are permanent; disputes are reversible
 window.verifyMeeting = async function(meetingId) {
     const meeting = allMeetings.find(m => m.id === meetingId);
     if (!meeting) return;

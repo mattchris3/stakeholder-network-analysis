@@ -30,6 +30,7 @@ export function createD3Visualization(nodes, links) {
 
     svg.call(zoom);
 
+    // Precompute connection counts before simulation mutates link objects
     const connectionCounts = {};
     nodes.forEach(n => { connectionCounts[n.id] = 0; });
     links.forEach(l => {
@@ -43,6 +44,7 @@ export function createD3Visualization(nodes, links) {
 
     let xForce, yForce;
 
+    // Cluster mode: calculate focal points arranged in a circle
     if (viewMode === 'sector' || viewMode === 'funding') {
         const groupKey = viewMode === 'sector' ? 'sector' : 'fundingType';
         const groups = [...new Set(nodes.map(n => n[groupKey] || 'unknown'))];
@@ -59,7 +61,9 @@ export function createD3Visualization(nodes, links) {
 
         xForce = d3.forceX(d => groupCenters[d[groupKey] || 'unknown'].x).strength(0.8);
         yForce = d3.forceY(d => groupCenters[d[groupKey] || 'unknown'].y).strength(0.8);
-    } else {
+    }
+    // Core-periphery: pull strength proportional to connections 
+    else {
         xForce = d3.forceX(width / 2).strength(d => {
             const c = connectionCounts[d.id] || 0;
             if (c >= 13) return 0.75;
@@ -159,6 +163,7 @@ export function createD3Visualization(nodes, links) {
             highlightNode(d.id); 
         });
 
+    // Tick handler: runs every frame, syncs SVG positions to simulation coordinates
     simulation.on('tick', () => {
         const padding = 20;
         const w = container.clientWidth;

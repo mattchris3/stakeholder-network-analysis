@@ -1,6 +1,6 @@
 import { database } from '../config.js';
 import { ref, set } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-import { currentOrgId, currentUnityId, allMeetings, allMembers, loadData, showModal } from '../main.js';
+import { currentOrgId, currentUnityId, allMembers, loadData, showModal } from '../main.js';
 
 export function displayAddMeeting() {
     renderParticipantsList();

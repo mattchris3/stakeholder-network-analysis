@@ -53,6 +53,7 @@ function calculateInfluenceScores() {
         const normalizedPartners = partners / maxPartners;
         const normalizedBridge = bridge / maxBridge;
 
+        // Weighted score: meetings 35%, unique partners 40%, bridge score 25%
         const score = Math.round(
             (normalizedMeetings * 0.35 +
             normalizedPartners * 0.40 +

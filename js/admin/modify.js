@@ -106,6 +106,7 @@ function displayRemovedTable() {
     `).join('');
 }
 
+// Soft delete: sets approval to 'removed' instead of deleting from Firebase
 async function deleteEntity(entityId) {
     const entity = allAdminEntities.find(e => e.id === entityId);
     if (!entity) return;
