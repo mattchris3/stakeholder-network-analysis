@@ -1,14 +1,13 @@
 {
-  "name": "data",
+  "name": "unity-seed-data",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
-  "description": "",
-  "main": "firebase.js",
+  "description": "Seeds and resets the Unity demo data in Firebase Realtime Database",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "seed": "node firebase.js",
+    "reset": "node firebase-delete.js"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "firebase": "^12.10.0"

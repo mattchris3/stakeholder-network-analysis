@@ -1,90 +1,115 @@
-# Unity — Stakeholder Network Analysis
+# Unity: Stakeholder Network Analysis
 
-A multi-tenant web application that enables stakeholders within collaborative networks to visualize, log, and verify their collaboration relationships independently.
+A multi-tenant web app where the organisations in a collaborative network log their meetings,
+verify each other's records, and see the network that results: who works with whom, how often,
+and where the gaps are.
 
-## Overview
+Built as my final-year Computer Science project at Queen's University Belfast.
 
-Unity replaces traditional survey-based network analysis with a self-service platform where stakeholders create their own networks, log meetings, and verify each other's data through a democratic peer-verification system. Only meetings confirmed by all participants appear in the network visualization and analytics.
+![JavaScript](https://img.shields.io/badge/JavaScript-ES_Modules-F7DF1E?logo=javascript&logoColor=black)
+![D3.js](https://img.shields.io/badge/D3.js-v7-F9A03C?logo=d3dotjs&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-Realtime_DB-FFCA28?logo=firebase&logoColor=black)
+![Chart.js](https://img.shields.io/badge/Chart.js-4-FF6384?logo=chartdotjs&logoColor=white)
 
-### Key Features
+## Why it exists
 
-- **Multi-Tenancy**: Any stakeholder can create an independent network (Unity) and invite members via access code. All data is isolated through a unityId partition key.
-- **Democratic Verification**: Members log meetings, all participants verify independently. Approval is permanent, disputes are reversible. No single user can manipulate the network.
-- **Network Visualization**: D3.js force-directed graph with core-periphery layout, cluster by sector/funding type modes, dual organization search, and time period filtering with link strength recalculation.
-- **Network Insights**: Unique Contribution scoring, cross-domain Bridge identification, and Collaboration Gap detection, all derived from existing meeting and entity data.
-- **Domain-Agnostic**: Administrators define their own focus area vocabulary. The analytics engine operates on pattern matching, enabling deployment to any industry without code changes.
+Network analysis of partnerships is usually done with surveys: slow, self-reported and out of date
+by the time it's published. Unity replaces the survey with a shared logbook. Each member records the
+meetings it took part in, every other participant confirms or disputes them, and only meetings
+confirmed by **all** participants count towards the graph and the analytics. No single member can
+inflate its own position.
 
-## Tech Stack
+## Features
 
-- **Frontend**: Vanilla JavaScript (ES6 Modules), HTML, CSS
-- **Database**: Firebase Realtime Database
-- **Visualization**: D3.js (v7)
-- **Charts**: Chart.js
+- **Multi-tenancy.** Anyone can create a network (a "Unity") and invite members with an access code.
+  All data is partitioned by `unityId`.
+- **Peer verification.** Members log meetings and every participant verifies them independently.
+  Approval is final; a dispute can be withdrawn.
+- **Network graph.** A D3.js force-directed graph with a core-periphery layout, clustering by sector or
+  funding type, search for two organisations at once, and a time filter that recalculates link
+  strength.
+- **Insights.** A unique-contribution score, cross-domain "bridge" organisations, and
+  collaboration-gap detection, all derived from the meeting data.
+- **Domain-agnostic.** Admins define their own focus-area vocabulary, so the same analytics work for
+  health, energy or any other sector without code changes.
+- **Admin tools.** Member approval queue, member management with soft delete, and network profile
+  settings.
 
-## Setup
+## Try it locally
 
-1. Clone the repository:
-```
-git clone https://gitlab.eeecs.qub.ac.uk/40392445/stakeholder-network-analysis
-```
+You need Python 3 (or any static file server) and a modern browser. There's no build step.
 
-2. Navigate to the project directory:
-```
+```bash
+git clone https://github.com/mattchris3/stakeholder-network-analysis.git
 cd stakeholder-network-analysis
-```
-
-3. Start a local server:
-```
 python3 -m http.server 8000
 ```
 
-4. Open `http://localhost:8000` in a modern web browser.
+Open <http://localhost:8000>. The app connects to a hosted Firebase demo database, so it works straight
+away.
 
-The application connects to Firebase Realtime Database automatically. No additional configuration is required.
+### Demo accounts
 
-## Demo Credentials
+These sign in to a sample global-health network (25 organisations, 65 meetings):
 
-| Role | Unity ID | Username/Member ID | Password |
-|------|----------|-------------------|----------|
-| Admin | UNITY-GLOBHEALTH-2025 | admin_globalhealth | Admin123! |
-| Member | UNITY-GLOBHEALTH-2025 | WHO-001 | Not required |
+| Role | Unity ID | Member ID / username | Password |
+|---|---|---|---|
+| Member | `UNITY-GLOBHEALTH-2025` | `WHO-001` | none |
+| Admin | `UNITY-GLOBHEALTH-2025` | `admin_globalhealth` | `Admin123!` |
 
-## Project Structure
+The demo database is shared and public, so please don't enter real data.
+
+### Tests
+
+With the local server running, open <http://localhost:8000/tests/tests.html>. The tests check tenant
+isolation (entities and meetings never leak between Unities) and data integrity (participants belong to
+the meeting's Unity, approval fields are valid, and confirmed meetings are approved by everyone).
+
+### Reseeding the demo data
+
+`data/` holds the sample dataset and two Node scripts for loading it into Firebase:
+
+```bash
+cd data
+npm install
+npm run seed     # uploads data.json
+npm run reset    # deletes all Unity data
+```
+
+## How it's built
 
 ```
-js/
-├── main.js              — single entry point, shared state, navigation
-├── config.js            — Firebase connection
-├── login-admin.js       — admin authentication
-├── login-member.js      — member authentication
-├── new-unity.js         — Unity creation flow
-├── new-member.js        — member registration flow
-├── network/
-│   ├── data.js          — Firebase reads, filtering, link processing
-│   ├── visualization.js — D3 force graph rendering
-│   └── sidebar.js       — statistics, entity details panel
-├── admin/
-│   ├── overview.js      — sector chart, org/meeting tables
-│   ├── pending.js       — member approval workflow
-│   ├── modify.js        — member management, soft delete
-│   ├── organizations.js — organization list view
-│   ├── meetings.js      — meeting list view
-│   └── profile.js       — Unity profile, focus area management
-├── meeting/
-│   ├── add-meeting.js   — meeting logging form
-│   ├── manage.js        — verify/dispute workflow
-│   └── overview.js      — meeting history
-├── member/
-│   └── profile.js       — member profile, Unity info view
-└── analytics/
-    ├── overview.js      — personal performance summary
-    ├── influence.js     — network influence scoring
-    ├── activity.js      — trend, type, format charts
-    └── insights.js      — contribution, bridges, gaps analysis
+Browser (ES modules, no build step)
+ ├─ index.html, welcome-*.html   landing, sign-in and registration flows
+ └─ home.html + js/main.js       single-page dashboard: shared state and navigation
+      ├─ network/    data.js (Firebase reads, filtering, link strength)
+      │              visualization.js (D3 force graph), sidebar.js
+      ├─ meeting/    log, verify/dispute, history
+      ├─ analytics/  overview, influence, activity charts, insights
+      ├─ admin/      approvals, member management, profile
+      └─ member/     member profile
+              │
+              ▼
+Firebase Realtime Database: unities / admins / entities / meetings
 ```
+
+```
+css/       welcome.css, network/*, admin/*
+data/      sample dataset + seed/reset scripts
+tests/     browser-based isolation and integrity tests
+```
+
+## Roadmap
+
+This project is being modernised:
+
+- [x] Repository clean-up
+- [ ] Redesign in React + TypeScript + Vite, with a new design system
+- [ ] Firebase Authentication and database security rules (replacing the current demo-grade sign-in)
+- [ ] Hosted live demo with one-click demo sign-in
+- [ ] Unit tests for the analytics engine (Vitest)
 
 ## Author
 
-Matthew Christensen (40392445)
-Queen's University Belfast — CSC3002 Computer Science Project
-Supervised by Neil Anderson
+**Matthew Christensen**: final-year Computer Science project (CSC3002), Queen's University Belfast.
+Supervised by Neil Anderson.
