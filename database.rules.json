@@ -1,0 +1,71 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "admins": {
+      ".read": false,
+      ".write": false
+    },
+
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && auth.provider !== 'anonymous' && !data.exists()",
+        ".validate": "newData.hasChildren(['role', 'unityId']) && ((newData.child('role').val() === 'member' && newData.parent().parent().child('entities').child(newData.child('orgId').val()).child('ownerUid').val() === auth.uid) || (newData.child('role').val() === 'admin' && newData.parent().parent().child('unities').child(newData.child('unityId').val()).child('ownerUid').val() === auth.uid))"
+      }
+    },
+
+    "unities": {
+      ".read": "auth != null",
+      "$unityId": {
+        ".write": "auth != null && auth.provider !== 'anonymous' && newData.exists() && ((!data.exists() && newData.child('ownerUid').val() === auth.uid) || data.child('ownerUid').val() === auth.uid)",
+        ".validate": "newData.hasChildren(['unityId', 'name', 'ownerUid']) && newData.child('unityId').val() === $unityId",
+        "ownerUid": { ".validate": "!data.exists() || newData.val() === data.val()" },
+        "unityId": { ".validate": "!data.exists() || newData.val() === data.val()" }
+      }
+    },
+
+    "entities": {
+      ".read": "auth != null",
+      ".indexOn": ["unityId"],
+      "$entityId": {
+        ".write": "auth != null && auth.provider !== 'anonymous' && newData.exists() && ((!data.exists() && newData.child('ownerUid').val() === auth.uid && newData.child('approval').val() === 'pending' && newData.child('status').val() === 'inactive' && root.child('unities').child(newData.child('unityId').val()).exists() && root.child('unities').child(newData.child('unityId').val()).child('acceptingMembers').val() !== false) || (data.exists() && data.child('ownerUid').val() === auth.uid && newData.child('approval').val() === data.child('approval').val() && newData.child('status').val() === data.child('status').val()) || (data.exists() && root.child('users').child(auth.uid).child('role').val() === 'admin' && root.child('users').child(auth.uid).child('unityId').val() === data.child('unityId').val()))",
+        ".validate": "newData.hasChildren(['id', 'unityId', 'name', 'approval', 'status']) && newData.child('id').val() === $entityId",
+        "id": { ".validate": "!data.exists() || newData.val() === data.val()" },
+        "unityId": { ".validate": "!data.exists() || newData.val() === data.val()" },
+        "ownerUid": { ".validate": "!data.exists() || newData.val() === data.val()" },
+        "approval": { ".validate": "newData.val() === 'pending' || newData.val() === 'approved' || newData.val() === 'rejected' || newData.val() === 'removed'" },
+        "status": { ".validate": "newData.val() === 'active' || newData.val() === 'inactive'" }
+      }
+    },
+
+    "meetings": {
+      ".read": "auth != null",
+      ".indexOn": ["unityId"],
+      "$meetingId": {
+        ".write": "auth != null && auth.provider !== 'anonymous' && newData.exists() && root.child('users').child(auth.uid).child('role').val() === 'member' && ((!data.exists() && newData.child('hostId').val() === root.child('users').child(auth.uid).child('orgId').val() && root.child('entities').child(root.child('users').child(auth.uid).child('orgId').val()).child('approval').val() === 'approved' && newData.child('unityId').val() === root.child('users').child(auth.uid).child('unityId').val() && newData.child('status').val() === 'pending') || (data.exists() && data.child('approvals').child(root.child('users').child(auth.uid).child('orgId').val()).exists()))",
+        ".validate": "newData.hasChildren(['id', 'unityId', 'title', 'date', 'participants', 'hostId', 'status', 'approvals']) && newData.child('id').val() === $meetingId",
+        "id": { ".validate": "!data.exists() || newData.val() === data.val()" },
+        "unityId": { ".validate": "!data.exists() || newData.val() === data.val()" },
+        "title": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 200 && (!data.exists() || newData.val() === data.val())" },
+        "date": { ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/) && (!data.exists() || newData.val() === data.val())" },
+        "hostId": { ".validate": "!data.exists() || newData.val() === data.val()" },
+        "type": { ".validate": "!data.exists() || newData.val() === data.val()" },
+        "format": { ".validate": "!data.exists() || newData.val() === data.val()" },
+        "location": { ".validate": "!data.exists() || newData.val() === data.val()" },
+        "purpose": { ".validate": "newData.isString() && newData.val().length <= 4000 && (!data.exists() || newData.val() === data.val())" },
+        "outcome": { ".validate": "newData.isString() && newData.val().length <= 4000 && (!data.exists() || newData.val() === data.val())" },
+        "participants": {
+          "$i": { ".validate": "!data.exists() || newData.val() === data.val()" }
+        },
+        "status": { ".validate": "newData.val() === 'pending' || newData.val() === 'confirmed'" },
+        "approvals": {
+          "$orgId": {
+            ".validate": "(newData.val() === 'approved' || newData.val() === 'pending' || newData.val() === 'disputed') && ((!data.exists() && (newData.val() === 'pending' || $orgId === root.child('users').child(auth.uid).child('orgId').val())) || (data.exists() && (newData.val() === data.val() || ($orgId === root.child('users').child(auth.uid).child('orgId').val() && data.val() !== 'approved'))))"
+          }
+        }
+      }
+    }
+  }
+}

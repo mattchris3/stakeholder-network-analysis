@@ -5,7 +5,8 @@ import { Button, ButtonLink, Logo } from '../components/ui';
 import { clearUnityCache, loadUnity } from '../lib/data';
 import { label, SECTOR_COLORS } from '../lib/sectors';
 import { DEMO } from '../lib/session';
-import { createEntityRecord } from '../lib/store';
+import { applyToNetwork, friendlyError, signOut } from '../lib/auth';
+import { authEnabled } from '../lib/firebase';
 import type { Entity, Unity } from '../lib/types';
 
 const TYPES = ['ngo', 'un-agency', 'government', 'intergovernmental', 'academic', 'corporation', 'private-foundation'];
@@ -24,8 +25,10 @@ interface Draft {
   location: string;
   description: string;
   focusAreas: string[];
+  email: string;
+  password: string;
 }
-const EMPTY: Draft = { name: '', fullName: '', sector: '', type: '', size: '', region: '', fundingType: '', location: '', description: '', focusAreas: [] };
+const EMPTY: Draft = { name: '', fullName: '', sector: '', type: '', size: '', region: '', fundingType: '', location: '', description: '', focusAreas: [], email: '', password: '' };
 
 function Field({ id, text, error, children }: { id: string; text: string; error?: string; children: ReactNode }) {
   return (
@@ -61,7 +64,6 @@ export default function Join() {
   const [draft, setDraft] = useState<Draft>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof Draft | 'code', string>>>({});
   const [busy, setBusy] = useState(false);
-  const [memberId, setMemberId] = useState('');
   const isDemo = unity?.unityId === DEMO.unityId;
 
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => {
@@ -78,6 +80,8 @@ export default function Join() {
       const data = await loadUnity(unityId.trim());
       if (!data.unity || data.unity.accessCode?.toUpperCase() !== code.trim().toUpperCase()) {
         setErrors({ code: "That network ID and access code don't match. Check both with the network's admin." });
+      } else if (!authEnabled && data.unity.unityId !== DEMO.unityId) {
+        setErrors({ code: "Accounts aren't set up on this copy of the app, so only the demo network can be tried." });
       } else if (data.unity.acceptingMembers === false) {
         setErrors({ code: "This network isn't accepting new members right now." });
       } else {
@@ -101,6 +105,10 @@ export default function Join() {
     for (const k of ['sector', 'type', 'size', 'region', 'fundingType'] as const) if (!draft[k]) found[k] = 'Choose one.';
     if (draft.description.trim().length < 20) found.description = 'Describe your organisation in a sentence or two.';
     if (draft.focusAreas.length === 0) found.focusAreas = 'Choose at least one focus area.';
+    if (!isDemo) {
+      if (!/^\S+@\S+\.\S+$/.test(draft.email.trim())) found.email = 'Enter the email you will sign in with.';
+      if (draft.password.length < 8) found.password = 'Use at least 8 characters.';
+    }
     const clash = existing.find(
       (x) => x.name.toLowerCase() === draft.name.trim().toLowerCase() || (x.fullName ?? '').toLowerCase() === draft.fullName.trim().toLowerCase(),
     );
@@ -108,6 +116,7 @@ export default function Join() {
     setErrors(found);
     if (Object.keys(found).length) return;
 
+    const { email, password } = draft;
     const entity: Entity = {
       id: newMemberId(draft.name),
       unityId: unity!.unityId,
@@ -128,11 +137,14 @@ export default function Join() {
     setBusy(true);
     try {
       // The demo network is shared, so demo applications aren't saved.
-      if (!isDemo) await createEntityRecord(entity);
-      setMemberId(entity.id);
+      if (!isDemo) {
+        await applyToNetwork(email, password, entity);
+        // Not a member until approved, so don't keep them signed in.
+        await signOut();
+      }
       setStep('done');
-    } catch {
-      setErrors({ description: "Couldn't send your application. Try again." });
+    } catch (err) {
+      setErrors({ email: friendlyError(err) });
     } finally {
       setBusy(false);
     }
@@ -216,6 +228,17 @@ export default function Join() {
                   </div>
                   {errors.focusAreas && <p className="mt-1.5 text-xs text-danger">{errors.focusAreas}</p>}
                 </fieldset>
+                {!isDemo && (
+                  <div className="grid gap-4 border-t border-line pt-4 sm:grid-cols-2">
+                    <Field id="email" text="Your email" error={errors.email}>
+                      <input id="email" type="email" autoComplete="email" className="field" placeholder="name@organisation.org" value={draft.email} onChange={(e) => set('email', e.target.value)} />
+                    </Field>
+                    <Field id="password" text="Choose a password" error={errors.password}>
+                      <input id="password" type="password" autoComplete="new-password" className="field" value={draft.password} onChange={(e) => set('password', e.target.value)} />
+                    </Field>
+                    <p className="text-xs text-ink-muted sm:col-span-2">You'll sign in with these once the admin approves your organisation.</p>
+                  </div>
+                )}
               </div>
               <div className="mt-4 flex justify-between gap-2">
                 <Button onClick={() => setStep('code')}>Back</Button>
@@ -230,10 +253,9 @@ export default function Join() {
               <h1 className="mt-4 text-2xl font-semibold tracking-tight">Application sent</h1>
               <p className="mt-2 text-ink-soft">
                 {isDemo
-                  ? "In a real network, the admin would now review it. Nothing was saved."
-                  : `${unity?.name}'s admin will review it. Once approved, sign in with your member ID:`}
+                  ? 'In a real network, the admin would now review it. Nothing was saved.'
+                  : `${unity?.name}'s admin will review it. Once approved, sign in with ${draft.email.trim()}.`}
               </p>
-              {!isDemo && <p className="num mt-3 rounded-lg bg-sunken py-2 text-lg font-medium">{memberId}</p>}
               <ButtonLink to="/" className="mt-6">Back to home</ButtonLink>
             </motion.div>
           )}

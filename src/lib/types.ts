@@ -8,6 +8,8 @@ export interface Unity {
   created?: string;
   acceptingMembers?: boolean;
   focusAreas?: string[];
+  /** Firebase uid of the network's admin account. */
+  ownerUid?: string;
 }
 
 export interface Entity {
@@ -27,6 +29,8 @@ export interface Entity {
   duty?: string;
   appliedDate?: string;
   approvedDate?: string;
+  /** Firebase uid of the account that manages this organisation. */
+  ownerUid?: string;
   rejectedDate?: string;
   removedDate?: string;
   founded?: number | string;

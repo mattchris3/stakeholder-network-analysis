@@ -1,6 +1,7 @@
 // Loads one Unity's data: Firebase first, the bundled demo snapshot if
 // Firebase is slow, unreachable or empty. The demo never shows a blank page.
 import { get, ref } from 'firebase/database';
+import { ensureUser } from './auth';
 import { database } from './firebase';
 import type { Entity, Meeting, Unity, UnityData } from './types';
 import snapshot from '../data/demo-snapshot.json';
@@ -20,6 +21,8 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 async function fromFirebase(): Promise<Tables> {
+  // The security rules only let signed-in users read; the demo signs in anonymously.
+  await withTimeout(ensureUser(), FIREBASE_TIMEOUT_MS);
   const [unities, entities, meetings] = await withTimeout(
     Promise.all(['unities', 'entities', 'meetings'].map((path) => get(ref(database, path)))),
     FIREBASE_TIMEOUT_MS,

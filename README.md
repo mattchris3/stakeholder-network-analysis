@@ -62,8 +62,30 @@ snapshot of the same data, so the demo always opens.
 | `npm test` | Run the unit tests (Vitest) |
 | `npm run build` | Type-check and build for production into `dist/` |
 | `npm run snapshot` | Rebuild the bundled demo snapshot from `data/data.json` |
+| `npm run test:rules` | Test the database security rules against the local Firebase emulator (needs Java) |
+| `npm run db:check` | Read-only health check of the live database: access, consistency, test leftovers |
 
-To sign in to a network by hand, use network ID `UNITY-GLOBHEALTH-2025` and member ID `WHO-001`.
+## Accounts and security
+
+Authentication uses **Firebase Authentication**, and the **Realtime Database security rules**
+([`database.rules.json`](database.rules.json)) enforce every permission on the server:
+
+| Who | How they sign in | What they can do |
+|---|---|---|
+| Visitors and testers | **Try the demo**: anonymous Firebase sign-in, no account | Read the sample network. Demo changes stay in the browser tab; the rules refuse anonymous writes. |
+| Members | Email and password, created when they apply to join a network | Log meetings as host, verify or dispute only their own part, edit their own profile |
+| Admins | Email and password, created with **Create a network** | Approve, reject and remove members of their own network; edit its settings |
+
+`users/{uid}` links each account to its network and role. The rules check it on every write: a member
+can't approve itself, decide for another participant, rewrite a logged meeting, or undo a verification,
+and an admin can't touch another network. 25 emulator tests cover these cases
+([`rules/database.rules.test.ts`](rules/database.rules.test.ts)).
+
+Known limitation: the rules can't loop over a meeting's participants, so they can't prove "everyone has
+verified" before a meeting's `status` becomes `confirmed`. The app sets it only when that's true.
+
+To run your own copy with accounts, copy `.env.example` to `.env.local` and add your Firebase web app
+config. Without it, the app runs the demo only.
 
 ### The original version
 
@@ -118,7 +140,7 @@ This project is being modernised:
 - [x] Meetings: log, verify, dispute and history
 - [x] Analytics: overview, influence, activity and insights (contribution, bridges, gaps)
 - [x] Profile, admin (applications, members, network settings) and applying to join
-- [ ] Firebase Authentication and database security rules (replacing the current demo-grade sign-in)
+- [x] Firebase Authentication (anonymous demo, member and admin accounts) and tested security rules
 - [ ] Hosted live demo with one-click demo sign-in
 - [x] Unit tests for the network model, analytics and verification rules (Vitest)
 
