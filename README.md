@@ -6,10 +6,12 @@ and where the gaps are.
 
 Built as my final-year Computer Science project at Queen's University Belfast.
 
-![JavaScript](https://img.shields.io/badge/JavaScript-ES_Modules-F7DF1E?logo=javascript&logoColor=black)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
 ![D3.js](https://img.shields.io/badge/D3.js-v7-F9A03C?logo=d3dotjs&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-Realtime_DB-FFCA28?logo=firebase&logoColor=black)
-![Chart.js](https://img.shields.io/badge/Chart.js-4-FF6384?logo=chartdotjs&logoColor=white)
 
 ## Why it exists
 
@@ -37,33 +39,36 @@ inflate its own position.
 
 ## Try it locally
 
-You need Python 3 (or any static file server) and a modern browser. There's no build step.
+You need Node.js 20 or later.
 
 ```bash
 git clone https://github.com/mattchris3/stakeholder-network-analysis.git
 cd stakeholder-network-analysis
-python3 -m http.server 8000
+npm install
+npm run dev
 ```
 
-Open <http://localhost:8000>. The app connects to a hosted Firebase demo database, so it works straight
-away.
+Open <http://localhost:5173> and press **Try the demo**. It signs you in as WHO in a sample global-health
+network (15 organisations), with no account needed. **Or see the admin view** opens the same network as
+its admin. In demo mode you can verify, dispute, log meetings and approve members; changes stay in your
+browser tab and are never written to the database.
 
-### Demo accounts
+The app reads a hosted Firebase demo database. If Firebase is unreachable it falls back to a bundled
+snapshot of the same data, so the demo always opens.
 
-These sign in to a sample global-health network (25 organisations, 65 meetings):
+| Command | What it does |
+|---|---|
+| `npm run dev` | Start the dev server |
+| `npm test` | Run the unit tests (Vitest) |
+| `npm run build` | Type-check and build for production into `dist/` |
+| `npm run snapshot` | Rebuild the bundled demo snapshot from `data/data.json` |
 
-| Role | Unity ID | Member ID / username | Password |
-|---|---|---|---|
-| Member | `UNITY-GLOBHEALTH-2025` | `WHO-001` | none |
-| Admin | `UNITY-GLOBHEALTH-2025` | `admin_globalhealth` | `Admin123!` |
+To sign in to a network by hand, use network ID `UNITY-GLOBHEALTH-2025` and member ID `WHO-001`.
 
-The demo database is shared and public, so please don't enter real data.
+### The original version
 
-### Tests
-
-With the local server running, open <http://localhost:8000/tests/tests.html>. The tests check tenant
-isolation (entities and meetings never leak between Unities) and data integrity (participants belong to
-the meeting's Unity, approval fields are valid, and confirmed meetings are approved by everyone).
+The first version (vanilla JavaScript, no build step) is kept in [`legacy/`](legacy/) for comparison. It
+still runs with `python3 -m http.server 8000` from that folder.
 
 ### Reseeding the demo data
 
@@ -79,35 +84,43 @@ npm run reset    # deletes all Unity data
 ## How it's built
 
 ```
-Browser (ES modules, no build step)
- ├─ index.html, welcome-*.html   landing, sign-in and registration flows
- └─ home.html + js/main.js       single-page dashboard: shared state and navigation
-      ├─ network/    data.js (Firebase reads, filtering, link strength)
-      │              visualization.js (D3 force graph), sidebar.js
-      ├─ meeting/    log, verify/dispute, history
-      ├─ analytics/  overview, influence, activity charts, insights
-      ├─ admin/      approvals, member management, profile
-      └─ member/     member profile
-              │
-              ▼
-Firebase Realtime Database: unities / admins / entities / meetings
+src/
+├─ lib/
+│  ├─ network.ts      graph model: build links from verified meetings, filter, rank (unit-tested)
+│  ├─ analytics.ts    influence, activity, unique contribution, bridges, gaps (unit-tested)
+│  ├─ meetings.ts     the peer-verification rules: verify, dispute, withdraw, confirm (unit-tested)
+│  ├─ store.ts        Firebase writes (skipped in demo mode)
+│  ├─ data.ts         loads a network from Firebase, falls back to the bundled snapshot
+│  ├─ session.tsx     signed-in member (session storage)
+│  └─ sectors.ts      one colour per sector, shared by the graph and legends
+├─ components/
+│  ├─ NetworkGraph.tsx  D3 force simulation inside React: zoom, drag, keyboard, focus highlighting
+│  ├─ NetworkPanel.tsx  ranking and organisation details
+│  └─ AppShell.tsx      header, navigation and page transitions
+└─ pages/             Landing, SignIn, Join, NetworkPage, Profile, meetings/, analytics/, admin/
 ```
 
-```
-css/       welcome.css, network/*, admin/*
-data/      sample dataset + seed/reset scripts
-tests/     browser-based isolation and integrity tests
-```
+- **React owns the page, D3 owns the graph.** The graph component hands D3 one `<svg>` and keeps the
+  simulation in refs, so selecting a node restyles it without restarting the layout, and filtering keeps
+  each node where it was.
+- **The network logic is pure TypeScript** with no DOM or Firebase in it, which is what the tests cover.
+- **Motion** is restrained (cross-fades, a sliding detail panel, nodes easing in) and switched off when
+  the system asks for reduced motion.
+- **Firebase and D3 load only after sign-in**, so the landing page stays light.
 
 ## Roadmap
 
 This project is being modernised:
 
 - [x] Repository clean-up
-- [ ] Redesign in React + TypeScript + Vite, with a new design system
+- [x] React + TypeScript + Vite foundation, design system, landing page and demo sign-in
+- [x] Network view: graph, filters, ranking and organisation details
+- [x] Meetings: log, verify, dispute and history
+- [x] Analytics: overview, influence, activity and insights (contribution, bridges, gaps)
+- [x] Profile, admin (applications, members, network settings) and applying to join
 - [ ] Firebase Authentication and database security rules (replacing the current demo-grade sign-in)
 - [ ] Hosted live demo with one-click demo sign-in
-- [ ] Unit tests for the analytics engine (Vitest)
+- [x] Unit tests for the network model, analytics and verification rules (Vitest)
 
 ## Author
 
