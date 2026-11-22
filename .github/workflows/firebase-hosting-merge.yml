@@ -1,0 +1,41 @@
+# Publishes the live demo (https://unity-network.web.app) whenever master changes.
+# Nothing deploys unless the type-check, unit tests and security-rules tests pass.
+name: Deploy live site
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: deploy-live
+  cancel-in-progress: false
+
+jobs:
+  test_build_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # The security-rules tests run on the Firebase emulator, which needs Java.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run test:rules
+      - run: npm run build
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TEST_DATA_747C4 }}
+          channelId: live
+          projectId: test-data-747c4

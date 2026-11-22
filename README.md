@@ -6,6 +6,13 @@ and where the gaps are.
 
 Built as my final-year Computer Science project at Queen's University Belfast.
 
+### [▶ Try the live demo](https://unity-network.web.app)
+
+One click, no sign-up: you're signed in as WHO in a sample global-health network. **Or see the admin
+view** from the same page. Demo changes stay in your browser tab.
+
+[![Deploy live site](https://github.com/mattchris3/stakeholder-network-analysis/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/mattchris3/stakeholder-network-analysis/actions/workflows/firebase-hosting-merge.yml)
+
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
@@ -130,6 +137,17 @@ src/
   the system asks for reduced motion.
 - **Firebase and D3 load only after sign-in**, so the landing page stays light.
 
+## Deployment
+
+The site is on **Firebase Hosting** at <https://unity-network.web.app>, deployed by GitHub Actions:
+
+- **Pull requests:** type-check, unit tests, security-rules tests (Firebase emulator) and build, then a
+  temporary preview site whose link is posted on the pull request.
+- **Merges to `master`:** the same checks, then deploy to the live site. Nothing deploys if a check fails.
+
+Database rules are deployed separately with `npx firebase deploy --only database`, and `npm run deploy`
+publishes the site by hand.
+
 ## Roadmap
 
 This project is being modernised:
@@ -141,7 +159,8 @@ This project is being modernised:
 - [x] Analytics: overview, influence, activity and insights (contribution, bridges, gaps)
 - [x] Profile, admin (applications, members, network settings) and applying to join
 - [x] Firebase Authentication (anonymous demo, member and admin accounts) and tested security rules
-- [ ] Hosted live demo with one-click demo sign-in
+- [x] Hosted live demo with one-click demo sign-in (Firebase Hosting)
+- [x] CI/CD: every pull request is tested and gets a preview link; merges to `master` deploy automatically
 - [x] Unit tests for the network model, analytics and verification rules (Vitest)
 
 ## Author

@@ -11,7 +11,8 @@
     "test": "vitest run",
     "snapshot": "node scripts/build-snapshot.mjs",
     "db:check": "node --env-file-if-exists=.env.local scripts/check-database.mjs",
-    "test:rules": "firebase emulators:exec --only database --project demo-unity \"vitest run --config vitest.rules.config.ts\""
+    "test:rules": "firebase emulators:exec --only database --project demo-unity \"vitest run --config vitest.rules.config.ts\"",
+    "deploy": "npm run build && firebase deploy --only hosting"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",
