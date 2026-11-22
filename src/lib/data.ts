@@ -50,7 +50,8 @@ export function loadUnity(unityId: string): Promise<UnityData> {
   if (!pending) {
     pending = fromFirebase()
       .then((tables) => select(tables, unityId, 'firebase'))
-      .then((data) => (data.entities.length > 0 ? data : select(snapshot as Tables, unityId, 'snapshot')))
+      // Fall back only if Firebase doesn't know this network at all; a new network has no members yet.
+      .then((data) => (data.unity || data.entities.length > 0 ? data : select(snapshot as Tables, unityId, 'snapshot')))
       .catch((error) => {
         console.warn('Using the bundled demo data:', error);
         return select(snapshot as Tables, unityId, 'snapshot');
