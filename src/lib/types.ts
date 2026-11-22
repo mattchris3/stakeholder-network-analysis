@@ -25,6 +25,10 @@ export interface Entity {
   approval?: string;
   description?: string;
   duty?: string;
+  appliedDate?: string;
+  approvedDate?: string;
+  rejectedDate?: string;
+  removedDate?: string;
   founded?: number | string;
   budget?: number;
   fundingSource?: string;

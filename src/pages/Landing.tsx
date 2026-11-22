@@ -46,6 +46,7 @@ const rise = {
 
 export default function Landing() {
   const startDemo = useStartDemo();
+  const startAdminDemo = useStartDemo('admin');
 
   return (
     <div className="min-h-dvh">
@@ -100,7 +101,10 @@ export default function Landing() {
               </ButtonLink>
             </motion.div>
             <motion.p {...rise} transition={{ duration: 0.6, delay: 0.26 }} className="mt-4 text-sm text-ink-muted">
-              No sign-up. Opens a sample global-health network of 15 organisations.
+              No sign-up. Opens a sample global-health network of 15 organisations.{' '}
+              <button type="button" onClick={startAdminDemo} className="font-medium text-ink-soft underline decoration-line underline-offset-4 hover:text-ink">
+                Or see the admin view
+              </button>
             </motion.p>
           </div>
           <motion.div
@@ -147,7 +151,7 @@ export default function Landing() {
           <div className="mt-12 flex flex-col items-start justify-between gap-6 rounded-xl bg-ink px-6 py-8 text-white sm:flex-row sm:items-center sm:px-8">
             <div>
               <h2 className="text-xl font-semibold tracking-tight">Explore the sample network</h2>
-              <p className="mt-1 text-white/70">You'll sign in as WHO. Nothing you do there is saved.</p>
+              <p className="mt-1 text-white/70">Sign in as WHO: log, verify and explore. Nothing you do there is saved.</p>
             </div>
             <Button variant="primary" size="lg" onClick={startDemo}>
               Try the demo

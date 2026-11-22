@@ -49,7 +49,9 @@ npm run dev
 ```
 
 Open <http://localhost:5173> and press **Try the demo**. It signs you in as WHO in a sample global-health
-network (15 organisations), with no account needed.
+network (15 organisations), with no account needed. **Or see the admin view** opens the same network as
+its admin. In demo mode you can verify, dispute, log meetings and approve members; changes stay in your
+browser tab and are never written to the database.
 
 The app reads a hosted Firebase demo database. If Firebase is unreachable it falls back to a bundled
 snapshot of the same data, so the demo always opens.
@@ -65,9 +67,8 @@ To sign in to a network by hand, use network ID `UNITY-GLOBHEALTH-2025` and memb
 
 ### The original version
 
-The first version (vanilla JavaScript, no build step) is kept in [`legacy/`](legacy/) while the redesign is
-completed. It still runs with `python3 -m http.server 8000` from that folder, and includes the admin,
-meetings and analytics screens not yet rebuilt.
+The first version (vanilla JavaScript, no build step) is kept in [`legacy/`](legacy/) for comparison. It
+still runs with `python3 -m http.server 8000` from that folder.
 
 ### Reseeding the demo data
 
@@ -86,6 +87,9 @@ npm run reset    # deletes all Unity data
 src/
 ├─ lib/
 │  ├─ network.ts      graph model: build links from verified meetings, filter, rank (unit-tested)
+│  ├─ analytics.ts    influence, activity, unique contribution, bridges, gaps (unit-tested)
+│  ├─ meetings.ts     the peer-verification rules: verify, dispute, withdraw, confirm (unit-tested)
+│  ├─ store.ts        Firebase writes (skipped in demo mode)
 │  ├─ data.ts         loads a network from Firebase, falls back to the bundled snapshot
 │  ├─ session.tsx     signed-in member (session storage)
 │  └─ sectors.ts      one colour per sector, shared by the graph and legends
@@ -93,7 +97,7 @@ src/
 │  ├─ NetworkGraph.tsx  D3 force simulation inside React: zoom, drag, keyboard, focus highlighting
 │  ├─ NetworkPanel.tsx  ranking and organisation details
 │  └─ AppShell.tsx      header, navigation and page transitions
-└─ pages/             Landing, SignIn, NetworkPage
+└─ pages/             Landing, SignIn, Join, NetworkPage, Profile, meetings/, analytics/, admin/
 ```
 
 - **React owns the page, D3 owns the graph.** The graph component hands D3 one `<svg>` and keeps the
@@ -111,12 +115,12 @@ This project is being modernised:
 - [x] Repository clean-up
 - [x] React + TypeScript + Vite foundation, design system, landing page and demo sign-in
 - [x] Network view: graph, filters, ranking and organisation details
-- [ ] Meetings: log, verify and dispute
-- [ ] Analytics: influence, activity and insights
-- [ ] Admin: member approvals and network settings
+- [x] Meetings: log, verify, dispute and history
+- [x] Analytics: overview, influence, activity and insights (contribution, bridges, gaps)
+- [x] Profile, admin (applications, members, network settings) and applying to join
 - [ ] Firebase Authentication and database security rules (replacing the current demo-grade sign-in)
 - [ ] Hosted live demo with one-click demo sign-in
-- [ ] Unit tests for the analytics engine (Vitest; the network model is covered)
+- [x] Unit tests for the network model, analytics and verification rules (Vitest)
 
 ## Author
 

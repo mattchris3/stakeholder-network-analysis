@@ -9,6 +9,7 @@ import { useStartDemo } from '../lib/useDemo';
 export default function SignIn() {
   const { signIn } = useSession();
   const startDemo = useStartDemo();
+  const startAdminDemo = useStartDemo('admin');
   const navigate = useNavigate();
   const location = useLocation();
   const [unityId, setUnityId] = useState('');
@@ -107,10 +108,17 @@ export default function SignIn() {
             <span className="h-px flex-1 bg-line" />
           </div>
 
-          <Button className="w-full" onClick={startDemo}>
-            Explore the demo network
-          </Button>
-          <p className="mt-3 text-center text-sm text-ink-muted">Signs you in as WHO. Nothing is saved.</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button onClick={startDemo}>Demo as a member</Button>
+            <Button onClick={startAdminDemo}>Demo as admin</Button>
+          </div>
+          <p className="mt-3 text-center text-sm text-ink-muted">Opens the sample network. Nothing is saved.</p>
+          <p className="mt-8 text-center text-sm text-ink-soft">
+            New to a network?{' '}
+            <Link to="/join" className="font-medium text-accent underline-offset-4 hover:underline">
+              Apply to join
+            </Link>
+          </p>
         </motion.div>
       </main>
     </div>

@@ -259,7 +259,7 @@ export default function NetworkGraph({ nodes, links, layout, selectedId, homeId,
       for (const d of simNodes) {
         const r = nodeRadius(d) + PAD;
         d.x = Math.max(r, Math.min(w - r, d.x ?? 0));
-        d.y = Math.max(r, Math.min(h - r - 10, d.y ?? 0));
+        d.y = Math.max(r, Math.min(h - r - 36, d.y ?? 0)); // clear of the legend
       }
       linkSel
         .attr('x1', (d) => (d.source as SimNode).x!)
