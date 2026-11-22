@@ -26,6 +26,7 @@ const Applications = lazy(() => import('./pages/admin/Applications'));
 const Members = lazy(() => import('./pages/admin/Members'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings'));
 const Join = lazy(() => import('./pages/Join'));
+const CreateNetwork = lazy(() => import('./pages/CreateNetwork'));
 
 function Loading() {
   return (
@@ -36,8 +37,9 @@ function Loading() {
 }
 
 function RequireSession({ children }: { children: ReactNode }) {
-  const { session, signedOut } = useSession();
+  const { session, ready, signedOut } = useSession();
   const location = useLocation();
+  if (!ready) return <Loading />;
   if (!session) {
     return signedOut ? <Navigate to="/" replace /> : <Navigate to="/sign-in" replace state={{ from: location.pathname }} />;
   }
@@ -55,6 +57,7 @@ export default function App() {
               <Route path="/" element={<Landing />} />
               <Route path="/sign-in" element={<SignIn />} />
               <Route path="/join" element={<Join />} />
+              <Route path="/create" element={<CreateNetwork />} />
               <Route
                 path="/app"
                 element={

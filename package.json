@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "snapshot": "node scripts/build-snapshot.mjs"
+    "snapshot": "node scripts/build-snapshot.mjs",
+    "db:check": "node --env-file-if-exists=.env.local scripts/check-database.mjs",
+    "test:rules": "firebase emulators:exec --only database --project demo-unity \"vitest run --config vitest.rules.config.ts\""
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",
@@ -24,12 +26,14 @@
     "recharts": "^3.11.0"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@tailwindcss/vite": "^4.3.5",
     "@types/d3": "^7.4.3",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
+    "firebase-tools": "^15.37.0",
     "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2",
     "vite": "^8.3.8",

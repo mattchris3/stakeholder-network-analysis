@@ -2,8 +2,9 @@ import { useState, type FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { Button, Logo } from '../components/ui';
-import { clearUnityCache, loadUnity } from '../lib/data';
-import { DEMO, useSession } from '../lib/session';
+import { friendlyError, resetPassword } from '../lib/auth';
+import { authEnabled } from '../lib/firebase';
+import { useSession } from '../lib/session';
 import { useStartDemo } from '../lib/useDemo';
 
 export default function SignIn() {
@@ -12,40 +13,44 @@ export default function SignIn() {
   const startAdminDemo = useStartDemo('admin');
   const navigate = useNavigate();
   const location = useLocation();
-  const [unityId, setUnityId] = useState('');
-  const [memberId, setMemberId] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    const unity = unityId.trim();
-    const member = memberId.trim();
-    if (!unity || !member) {
-      setError('Enter both your network ID and your member ID.');
+    setNotice(null);
+    if (!email.trim() || !password) {
+      setError('Enter your email and password.');
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      clearUnityCache();
-      const data = await loadUnity(unity);
-      const entity = data.entities.find((x) => x.id === member);
-      if (!entity) {
-        setError("We couldn't find that member in that network. Check both IDs.");
-      } else if (entity.approval !== 'approved' || entity.status !== 'active') {
-        setError("Your organisation hasn't been approved yet. Ask your network's admin.");
-      } else {
-        const isDemo = unity === DEMO.unityId;
-        signIn({ role: 'member', unityId: unity, orgId: entity.id, orgName: entity.name, demo: isDemo });
-        const from = (location.state as { from?: string } | null)?.from;
-        navigate(from ?? '/app/network');
-      }
-    } catch {
-      setError("Couldn't reach the network. Try again in a moment.");
+      const session = await signIn(email, password);
+      const from = (location.state as { from?: string } | null)?.from;
+      navigate(from ?? (session.role === 'admin' ? '/app/admin' : '/app/network'));
+    } catch (err) {
+      setError(friendlyError(err));
     } finally {
       setBusy(false);
     }
+  }
+
+  async function onReset() {
+    setError(null);
+    if (!email.trim()) {
+      setError('Enter your email first, then choose "Forgot password".');
+      return;
+    }
+    try {
+      await resetPassword(email);
+    } catch {
+      /* Don't reveal whether the address has an account. */
+    }
+    setNotice(`If ${email.trim()} has an account, a reset link is on its way.`);
   }
 
   return (
@@ -62,49 +67,54 @@ export default function SignIn() {
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="w-full max-w-sm"
         >
-          <h1 className="text-2xl font-semibold tracking-tight">Sign in to your network</h1>
-          <p className="mt-2 text-ink-soft">Use the IDs your network's admin gave you.</p>
+          <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
+          <p className="mt-2 text-ink-soft">Members and network admins use the same sign-in.</p>
 
-          <form onSubmit={onSubmit} className="mt-8 space-y-4" noValidate>
-            <div>
-              <label htmlFor="unityId" className="mb-1.5 block text-sm font-medium">
-                Network ID
-              </label>
-              <input
-                id="unityId"
-                className="field num"
-                placeholder="UNITY-GLOBHEALTH-2025"
-                autoComplete="organization"
-                value={unityId}
-                onChange={(e) => { setUnityId(e.target.value); setError(null); }}
-              />
-            </div>
-            <div>
-              <label htmlFor="memberId" className="mb-1.5 block text-sm font-medium">
-                Member ID
-              </label>
-              <input
-                id="memberId"
-                className="field num"
-                placeholder="WHO-001"
-                autoComplete="username"
-                value={memberId}
-                onChange={(e) => { setMemberId(e.target.value); setError(null); }}
-              />
-            </div>
-            {error && (
-              <p role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">
-                {error}
-              </p>
-            )}
-            <Button type="submit" variant="primary" className="w-full" disabled={busy}>
-              {busy ? 'Signing in…' : 'Sign in'}
-            </Button>
-          </form>
+          {authEnabled ? (
+            <form onSubmit={onSubmit} className="mt-8 space-y-4" noValidate>
+              <div>
+                <label htmlFor="email" className="mb-1.5 block text-sm font-medium">Email</label>
+                <input
+                  id="email"
+                  type="email"
+                  className="field"
+                  placeholder="name@organisation.org"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setError(null); }}
+                />
+              </div>
+              <div>
+                <div className="mb-1.5 flex items-baseline justify-between">
+                  <label htmlFor="password" className="text-sm font-medium">Password</label>
+                  <button type="button" onClick={onReset} className="text-xs text-ink-muted hover:text-ink">
+                    Forgot password
+                  </button>
+                </div>
+                <input
+                  id="password"
+                  type="password"
+                  className="field"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setError(null); }}
+                />
+              </div>
+              {error && <p role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">{error}</p>}
+              {notice && <p role="status" className="rounded-lg bg-accent-soft px-3 py-2 text-sm text-accent-ink">{notice}</p>}
+              <Button type="submit" variant="primary" className="w-full" disabled={busy}>
+                {busy ? 'Signing in…' : 'Sign in'}
+              </Button>
+            </form>
+          ) : (
+            <p className="mt-8 rounded-lg bg-sunken px-3 py-2.5 text-sm text-ink-soft">
+              Accounts aren't set up on this copy of the app. The demo below shows every feature.
+            </p>
+          )}
 
           <div className="my-8 flex items-center gap-3 text-xs text-ink-muted">
             <span className="h-px flex-1 bg-line" />
-            or
+            or try it without an account
             <span className="h-px flex-1 bg-line" />
           </div>
 
@@ -113,12 +123,17 @@ export default function SignIn() {
             <Button onClick={startAdminDemo}>Demo as admin</Button>
           </div>
           <p className="mt-3 text-center text-sm text-ink-muted">Opens the sample network. Nothing is saved.</p>
-          <p className="mt-8 text-center text-sm text-ink-soft">
-            New to a network?{' '}
-            <Link to="/join" className="font-medium text-accent underline-offset-4 hover:underline">
-              Apply to join
-            </Link>
-          </p>
+
+          <div className="mt-10 space-y-2 border-t border-line pt-6 text-center text-sm text-ink-soft">
+            <p>
+              Your organisation was invited?{' '}
+              <Link to="/join" className="font-medium text-accent underline-offset-4 hover:underline">Apply to join</Link>
+            </p>
+            <p>
+              Starting a new network?{' '}
+              <Link to="/create" className="font-medium text-accent underline-offset-4 hover:underline">Create one</Link>
+            </p>
+          </div>
         </motion.div>
       </main>
     </div>

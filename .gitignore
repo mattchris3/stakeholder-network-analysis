@@ -18,3 +18,9 @@ npm-debug.log*
 
 # Build output
 dist/
+
+# Firebase local tooling
+.firebase/
+firebase-debug.log
+database-debug.log
+ui-debug.log

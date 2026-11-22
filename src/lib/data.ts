@@ -1,6 +1,7 @@
 // Loads one Unity's data: Firebase first, the bundled demo snapshot if
 // Firebase is slow, unreachable or empty. The demo never shows a blank page.
 import { get, ref } from 'firebase/database';
+import { ensureUser } from './auth';
 import { database } from './firebase';
 import type { Entity, Meeting, Unity, UnityData } from './types';
 import snapshot from '../data/demo-snapshot.json';
@@ -20,6 +21,8 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 async function fromFirebase(): Promise<Tables> {
+  // The security rules only let signed-in users read; the demo signs in anonymously.
+  await withTimeout(ensureUser(), FIREBASE_TIMEOUT_MS);
   const [unities, entities, meetings] = await withTimeout(
     Promise.all(['unities', 'entities', 'meetings'].map((path) => get(ref(database, path)))),
     FIREBASE_TIMEOUT_MS,
@@ -47,7 +50,8 @@ export function loadUnity(unityId: string): Promise<UnityData> {
   if (!pending) {
     pending = fromFirebase()
       .then((tables) => select(tables, unityId, 'firebase'))
-      .then((data) => (data.entities.length > 0 ? data : select(snapshot as Tables, unityId, 'snapshot')))
+      // Fall back only if Firebase doesn't know this network at all; a new network has no members yet.
+      .then((data) => (data.unity || data.entities.length > 0 ? data : select(snapshot as Tables, unityId, 'snapshot')))
       .catch((error) => {
         console.warn('Using the bundled demo data:', error);
         return select(snapshot as Tables, unityId, 'snapshot');
