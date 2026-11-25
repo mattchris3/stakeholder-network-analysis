@@ -27,7 +27,7 @@ export default function NetworkPanel({ network, selectedId, homeId, onSelect }: 
   const node = selectedId ? network.nodes.find((n) => n.id === selectedId) : undefined;
 
   return (
-    <aside className="card flex min-h-0 flex-col overflow-hidden lg:max-h-[calc(100dvh-14rem)]" aria-live="polite">
+    <aside className="card flex min-h-0 flex-col overflow-hidden lg:max-h-[calc(100dvh-14rem)]" aria-live="polite" data-tour="panel">
       <AnimatePresence mode="wait" initial={false}>
         {node ? (
           <motion.div key={node.id} {...slide} className="flex min-h-0 flex-1 flex-col">
