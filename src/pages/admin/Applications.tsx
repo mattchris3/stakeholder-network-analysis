@@ -13,6 +13,7 @@ export default function Applications() {
   const code = data.unity?.accessCode;
 
   return (
+    <div data-tour="admin-applications">
     <Section title="Applications" description="Organisations that used your access code to apply. Review each one before it joins." flush>
       {pending.length === 0 ? (
         <EmptyState
@@ -57,5 +58,6 @@ export default function Applications() {
         }
       />
     </Section>
+    </div>
   );
 }

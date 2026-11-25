@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { Link, NavLink, Outlet, useLocation, useOutletContext } from 'react-router';
+import { Link, NavLink, Outlet, useLocation, useNavigate, useOutletContext } from 'react-router';
 import { withDemoApplicants } from '../data/demoApplicants';
 import { loadUnity } from '../lib/data';
 import { inbox } from '../lib/meetings';
@@ -8,6 +8,7 @@ import { createEntityRecord, createMeetingRecord, saveDecision, updateEntityReco
 import { useSession, type Session } from '../lib/session';
 import type { Entity, Meeting, Unity, UnityData } from '../lib/types';
 import { Badge, Button, Logo, Spinner } from './ui';
+import { TourProvider } from './Tour';
 
 export interface ShellContext {
   session: Session;
@@ -43,6 +44,7 @@ const NAV: Record<Session['role'], { to: string; label: string; badge?: 'verify'
 export default function AppShell() {
   const { session, signOut } = useSession();
   const location = useLocation();
+  const navigate = useNavigate();
   const [data, setData] = useState<UnityData | null>(null);
 
   useEffect(() => {
@@ -112,20 +114,22 @@ export default function AppShell() {
   if (!session) return null;
 
   return (
+    <TourProvider>
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-20 border-b border-line bg-surface/85 backdrop-blur">
-        <div className="flex h-14 items-center gap-4 px-4 sm:px-6">
+        <div className="flex flex-wrap items-center gap-x-4 px-4 sm:h-14 sm:flex-nowrap sm:px-6">
           <Link to="/" aria-label="Unity home" className="shrink-0">
             <Logo />
           </Link>
           <span className="hidden truncate text-sm text-ink-muted md:block">
             / {data?.unity?.name ?? session.unityId}
           </span>
-          <nav className="ml-1 flex min-w-0 items-center gap-1 overflow-x-auto" aria-label="Main">
+          <nav className="order-last -mx-1 flex w-full items-center gap-1 overflow-x-auto pb-2 sm:order-none sm:mx-0 sm:ml-1 sm:w-auto sm:min-w-0 sm:pb-0" aria-label="Main">
             {NAV[session.role].map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
+                data-tour={`nav-${item.label.toLowerCase()}`}
                 className={({ isActive }) =>
                   `relative inline-flex h-8 items-center rounded-md px-3 text-[13px] font-medium transition-colors ${
                     isActive ? 'bg-sunken text-ink' : 'text-ink-soft hover:text-ink'
@@ -141,12 +145,26 @@ export default function AppShell() {
               </NavLink>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex h-14 items-center gap-2">
             {session.demo && (
               <span className="hidden sm:inline-flex">
                 <Badge tone="accent">Demo mode</Badge>
               </span>
             )}
+            <button
+              type="button"
+              data-tour="tour-button"
+              onClick={() => navigate(session.role === 'admin' ? '/app/admin' : '/app/network', { state: { tour: Date.now() } })}
+              className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[13px] font-medium text-ink-soft hover:bg-sunken hover:text-ink"
+              aria-label="Take the tour"
+              title="Take the tour"
+            >
+              <svg viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.25" />
+                <path d="M6.3 6.2a1.8 1.8 0 0 1 3.5.6c0 1.2-1.8 1.5-1.8 2.6M8 11.4v.1" />
+              </svg>
+              <span className="hidden md:inline">Tour</span>
+            </button>
             <span className="hidden h-8 items-center rounded-md border border-line px-2.5 text-[13px] font-medium sm:inline-flex">
               {session.orgName}
             </span>
@@ -181,5 +199,6 @@ onClick={signOut}
         )}
       </main>
     </div>
+    </TourProvider>
   );
 }

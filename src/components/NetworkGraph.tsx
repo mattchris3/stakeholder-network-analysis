@@ -98,7 +98,9 @@ export default function NetworkGraph({ nodes, links, layout, selectedId, homeId,
     const layer = svg.select<SVGGElement>('g.zoom-layer');
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.4, 4])
+      // Never smaller than the box: zooming out past 1× is what let the network
+      // be dragged out of view. Panning limits are set per size below.
+      .scaleExtent([1, 4])
       .on('zoom', (event) => layer.attr('transform', event.transform.toString()));
     svg.call(zoom).on('dblclick.zoom', null);
     svg.on('click', () => onSelectRef.current(null));
@@ -111,6 +113,11 @@ export default function NetworkGraph({ nodes, links, layout, selectedId, homeId,
     if (w === 0 || h === 0) return;
     const reduced = prefersReducedMotion();
     const svg = d3.select(svgRef.current!);
+
+    // Keep panning inside the box: at 1× nothing moves; zoomed in, you can pan
+    // up to the box's edges and no further. Re-clamp the current view on resize.
+    zoomRef.current!.extent([[0, 0], [w, h]]).translateExtent([[0, 0], [w, h]]);
+    svg.call(zoomRef.current!.transform, d3.zoomTransform(svg.node()!));
     const scale = Math.max(0.6, Math.min(1.3, Math.min(w, h) / 620));
     const colour = (d: NetworkNode) => (layout === 'funding' ? fundingColor(d.fundingType) : sectorColor(d.sector));
 
@@ -245,8 +252,10 @@ export default function NetworkGraph({ nodes, links, layout, selectedId, homeId,
             d.fy = d.y;
           })
           .on('drag', (event, d) => {
-            d.fx = event.x;
-            d.fy = event.y;
+            // A dragged node stays inside the box too.
+            const r = nodeRadius(d) + PAD;
+            d.fx = Math.max(r, Math.min(w - r, event.x));
+            d.fy = Math.max(r, Math.min(h - r - 36, event.y));
           })
           .on('end', (event, d) => {
             if (!event.active) sim.alphaTarget(0);

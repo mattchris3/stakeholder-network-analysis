@@ -1,8 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
 import { useShell } from '../components/AppShell';
 import NetworkGraph, { type Layout } from '../components/NetworkGraph';
 import NetworkPanel from '../components/NetworkPanel';
+import { useTour } from '../components/Tour';
+import { MEMBER_TOUR } from '../lib/tours';
 import { Button, Dot } from '../components/ui';
 import {
   DEFAULT_FILTERS,
@@ -39,6 +42,16 @@ export default function NetworkPage() {
   const [filters, setFilters] = useState<NetworkFilters>(DEFAULT_FILTERS);
   const [layout, setLayout] = useState<Layout>('core');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const tour = useTour();
+  const location = useLocation();
+  const tourRequest = (location.state as { tour?: number } | null)?.tour;
+
+  // First visit: show the tour once the graph has settled. The header button replays it.
+  useEffect(() => {
+    if (session.role !== 'member') return;
+    const t = setTimeout(() => (tourRequest ? tour.start('member', MEMBER_TOUR) : tour.startOnce('member', MEMBER_TOUR)), 900);
+    return () => clearTimeout(t);
+  }, [tourRequest]);
 
   const full = useMemo(
     () => buildNetwork(data.entities, data.meetings, session.unityId),
@@ -70,7 +83,7 @@ export default function NetworkPage() {
             Links are meetings every participant has verified.
           </p>
         </div>
-        <div role="radiogroup" aria-label="Layout" className="inline-flex rounded-lg border border-line bg-surface p-0.5">
+        <div role="radiogroup" aria-label="Layout" data-tour="layout" className="inline-flex rounded-lg border border-line bg-surface p-0.5">
           {LAYOUTS.map((l) => (
             <button
               key={l.value}
@@ -95,7 +108,7 @@ export default function NetworkPage() {
         </div>
       </div>
 
-      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4" data-tour="stats">
         {STAT_CARDS.map((s) => (
           <div key={s.label} className="card px-4 py-3">
             <dt className="text-xs text-ink-muted">{s.label}</dt>
@@ -104,7 +117,7 @@ export default function NetworkPage() {
         ))}
       </dl>
 
-      <div className="card flex flex-wrap items-center gap-2 p-2">
+      <div className="card flex flex-wrap items-center gap-2 p-2" data-tour="filters">
         <input
           className="field h-9 w-full sm:w-44"
           placeholder="Organisation"
@@ -174,7 +187,7 @@ export default function NetworkPage() {
       </div>
 
       <div className="grid flex-1 gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <section className="card relative min-h-[480px] overflow-hidden lg:min-h-[560px]" aria-label="Network graph">
+        <section className="card relative min-h-[480px] overflow-hidden lg:min-h-[560px]" aria-label="Network graph" data-tour="graph">
           {view.nodes.length > 0 ? (
             <NetworkGraph
               nodes={view.nodes}

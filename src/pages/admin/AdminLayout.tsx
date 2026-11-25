@@ -1,8 +1,10 @@
-import { useMemo, useState, type ReactNode } from 'react';
-import { Navigate, Outlet, useOutletContext } from 'react-router';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Navigate, Outlet, useLocation, useOutletContext } from 'react-router';
 import { useShell, type ShellContext } from '../../components/AppShell';
 import { ConfirmDialog, PageHeader, StatCard, SubNav } from '../../components/layout';
 import { useToast } from '../../components/Toast';
+import { useTour } from '../../components/Tour';
+import { ADMIN_TOUR } from '../../lib/tours';
 import type { Entity } from '../../lib/types';
 
 export type MemberAction = 'approve' | 'reject' | 'remove' | 'restore';
@@ -67,6 +69,15 @@ export default function AdminLayout() {
   const toast = useToast();
   const [pendingAction, setPendingAction] = useState<{ entity: Entity; action: MemberAction } | null>(null);
   const [busy, setBusy] = useState(false);
+  const tour = useTour();
+  const location = useLocation();
+  const tourRequest = (location.state as { tour?: number } | null)?.tour;
+
+  useEffect(() => {
+    if (shell.session.role !== 'admin') return;
+    const t = setTimeout(() => (tourRequest ? tour.start('admin', ADMIN_TOUR) : tour.startOnce('admin', ADMIN_TOUR)), 600);
+    return () => clearTimeout(t);
+  }, [tourRequest]);
 
   const groups = useMemo(() => {
     const es = shell.data.entities;
@@ -107,12 +118,13 @@ export default function AdminLayout() {
             : `Manage ${shell.data.unity?.name ?? 'your network'}.`
         }
       />
-      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4" data-tour="admin-stats">
         <StatCard label="Active members" value={groups.active.length} />
         <StatCard label="Applications waiting" value={groups.pending.length} />
         <StatCard label="Verified meetings" value={confirmed} />
         <StatCard label="Awaiting verification" value={meetings.length - confirmed} />
       </dl>
+      <div data-tour="admin-tabs">
       <SubNav
         items={[
           { to: '/app/admin', label: 'Applications', badge: groups.pending.length },
@@ -120,6 +132,7 @@ export default function AdminLayout() {
           { to: '/app/admin/settings', label: 'Network settings' },
         ]}
       />
+      </div>
       <Outlet
         context={{ ...shell, ...groups, requestAction: (entity, action) => setPendingAction({ entity, action }) } satisfies AdminContext}
       />
